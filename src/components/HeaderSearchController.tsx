@@ -75,7 +75,7 @@ export const HeaderSearchController: React.FC<HeaderSearchControllerProps> = (pr
     return (
         <div
             ref={containerRef}
-            className={'flex-1 max-w-xl mx-auto relative group'}
+            className={'flex-1 max-w-xl mx-auto relative'}
             onKeyDown={handleKeyDown}
         >
             <SearchInput
