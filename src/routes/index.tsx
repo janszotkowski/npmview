@@ -55,9 +55,13 @@ function Home() {
             }
             const nextIndex = activeIndex <= 0 ? results.length - 1 : activeIndex - 1;
             setActiveIndex(nextIndex);
-        } else if (e.key === 'Enter' && activeIndex >= 0 && activeIndex < results.length) {
+        } else if (e.key === 'Enter') {
             e.preventDefault();
-            navigate({to: '/package/$name', params: {name: results[activeIndex].name}});
+            if (activeIndex >= 0 && activeIndex < results.length) {
+                navigate({to: '/package/$name', params: {name: results[activeIndex].name}});
+            } else if (query.trim()) {
+                navigate({to: '/package/$name', params: {name: query.trim()}});
+            }
         }
     };
 
