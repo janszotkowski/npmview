@@ -9,6 +9,16 @@ export default defineConfig({
         sourcemap: true,
         target: 'es2022',
         minify: 'terser',
+        terserOptions: {
+            compress: {
+                drop_console: true,
+                drop_debugger: true,
+                passes: 2,
+            },
+            mangle: {
+                safari10: true,
+            },
+        },
     },
     server: {
         port: 3000,
@@ -20,10 +30,10 @@ export default defineConfig({
                 enabled: true,
                 crawlLinks: true,
             },
-            sitemap: {
-                enabled: true,
-                host: '',
-            },
+            // sitemap: {
+            //     enabled: true,
+            //     host: '',
+            // },
         }),
         viteReact(),
         tailwindcss(),
