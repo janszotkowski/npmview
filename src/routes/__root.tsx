@@ -1,9 +1,14 @@
 /// <reference types="vite/client" />
 import type { ReactNode } from 'react';
-import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
+import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
 import appCss from '../styles/app.css?url';
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { QueryClient } from '@tanstack/react-query';
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{
+    queryClient: QueryClient
+}>()({
     headers: () => ({
         'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
     }),
@@ -59,6 +64,8 @@ function RootDocument({children}: Readonly<{ children: ReactNode }>) {
         </head>
         <body>
         {children}
+        <TanStackRouterDevtools position={'bottom-right'}/>
+        <ReactQueryDevtools buttonPosition={'bottom-left'}/>
         <Scripts/>
         </body>
         </html>
