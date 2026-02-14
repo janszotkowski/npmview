@@ -1,15 +1,27 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, Copy, Terminal } from 'lucide-react';
 
 type InstallCommandProps = {
     packageName: string;
 };
 
-type PackageManager = 'npm' | 'pnpm' | 'yarn';
+type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun';
 
 export const InstallCommand: React.FC<InstallCommandProps> = (props): React.ReactElement => {
     const [manager, setManager] = useState<PackageManager>('npm');
     const [copied, setCopied] = useState(false);
+
+    useEffect(() => {
+        const saved = localStorage.getItem('preferred-package-manager') as PackageManager | null;
+        if (saved && ['npm', 'pnpm', 'yarn', 'bun'].includes(saved)) {
+            setManager(saved);
+        }
+    }, []);
+
+    const handleManagerChange = (pm: PackageManager): void => {
+        setManager(pm);
+        localStorage.setItem('preferred-package-manager', pm);
+    };
 
     const getCommand = (): string => {
         switch (manager) {
@@ -19,6 +31,8 @@ export const InstallCommand: React.FC<InstallCommandProps> = (props): React.Reac
                 return `pnpm add ${props.packageName}`;
             case 'yarn':
                 return `yarn add ${props.packageName}`;
+            case 'bun':
+                return `bun add ${props.packageName}`;
         }
     };
 
@@ -31,10 +45,10 @@ export const InstallCommand: React.FC<InstallCommandProps> = (props): React.Reac
     return (
         <div className={'w-full max-w-md overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 shadow-2xl'}>
             <div className={'flex items-center border-b border-neutral-800 bg-neutral-900/50 px-2'}>
-                {(['npm', 'pnpm', 'yarn'] as const).map((pm) => (
+                {(['npm', 'pnpm', 'yarn', 'bun'] as const).map((pm) => (
                     <button
                         key={pm}
-                        onClick={() => setManager(pm)}
+                        onClick={() => handleManagerChange(pm)}
                         className={`cursor-pointer px-4 py-2 text-xs font-medium transition-colors ${manager === pm
                             ? 'text-red-500 dark:text-red-400'
                             : 'text-neutral-300 hover:text-red-300'
