@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
-import { Search } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 
 type SearchInputProps = {
     value: string;
@@ -26,7 +26,7 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
     return (
         <div className={'relative max-w-xl mx-auto group'}>
             <div className={'absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none'}>
-                <Search className={`h-5 w-5 transition-colors ${props.isLoading ? 'text-red-500 animate-pulse' : 'text-neutral-400 group-focus-within:text-red-500'}`}/>
+                <Search className={'h-5 w-5 transition-colors text-neutral-400 group-focus-within:text-red-500'}/>
             </div>
             <input
                 ref={inputRef}
@@ -40,9 +40,13 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
                 spellCheck={'false'}
             />
             <div className={'absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none'}>
-                <kbd className={'hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800 text-xs text-neutral-500 font-medium'}>
-                    ⌘K
-                </kbd>
+                {props.isLoading ? (
+                    <Loader2 className={'h-5 w-5 animate-spin text-neutral-400'}/>
+                ) : (
+                    <kbd className={'hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800 text-xs text-neutral-500 font-medium'}>
+                        ⌘K
+                    </kbd>
+                )}
             </div>
         </div>
     );
