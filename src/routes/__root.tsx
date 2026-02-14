@@ -8,7 +8,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { ThemeProvider } from '@/components/ThemeProvider';
-import { siteConfig } from '@/utils/seo.ts';
+import { siteConfig, defaultMeta } from '@/utils/seo.ts';
 
 export const Route = createRootRouteWithContext<{
     queryClient: QueryClient
@@ -28,6 +28,7 @@ export const Route = createRootRouteWithContext<{
             {
                 title: siteConfig.title,
             },
+            ...defaultMeta,
         ],
         links: [
             // {
