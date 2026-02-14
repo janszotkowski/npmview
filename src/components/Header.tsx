@@ -1,16 +1,21 @@
-import { Link } from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router';
+import type { ReactElement } from 'react';
 import { Github, PackageSearch } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import type { ReactElement } from 'react';
+import { HeaderSearchController } from '@/components/HeaderSearchController.tsx';
 
 export const Header: React.FC = (): ReactElement => {
+    const location = useLocation();
+    const pathname = location.pathname;
+    const isPackagePage = pathname.startsWith('/package/');
+
     return (
         <header className={'sticky top-0 z-50 w-full border-b border-neutral-200 bg-white/80 backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/80'}>
             <div className={'container mx-auto flex h-16 items-center justify-between px-4'}>
-                <div className={'flex items-center gap-8'}>
+                <div className={'flex items-center gap-8 flex-1'}>
                     <Link
                         to={'/'}
-                        className={'flex items-center gap-2 font-bold text-xl tracking-tight hover:opacity-80 transition-opacity'}
+                        className={'flex items-center gap-2 font-bold text-xl tracking-tight hover:opacity-80 transition-opacity shrink-0'}
                         aria-label={'npmview home'}
                     >
                         <div
@@ -19,37 +24,15 @@ export const Header: React.FC = (): ReactElement => {
                         >
                             <PackageSearch className={'size-5'}/>
                         </div>
-                        <span>npmview</span>
+                        <span className={'hidden sm:inline'}>npmview</span>
                     </Link>
-
-                    <nav
-                        className={'hidden md:flex items-center gap-6'}
-                        aria-label={'Main navigation'}
-                    >
-                        <Link
-                            to={'/'}
-                            className={'text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-colors'}
-                            activeProps={{
-                                className: '!text-neutral-900 dark:!text-white font-semibold',
-                                'aria-current': 'page',
-                            }}
-                        >
-                            Home
-                        </Link>
-                        <Link
-                            to={'/about'}
-                            className={'text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-colors'}
-                            activeProps={{
-                                className: '!text-neutral-900 dark:!text-white font-semibold',
-                                'aria-current': 'page',
-                            }}
-                        >
-                            About
-                        </Link>
-                    </nav>
+                    <HeaderSearchController
+                        key={pathname}
+                        isPackagePage={isPackagePage}
+                    />
                 </div>
 
-                <div className={'flex items-center gap-4'}>
+                <div className={'flex items-center gap-4 shrink-0 ml-4'}>
                     <a
                         href={'https://github.com/janszotkowski/npmview'}
                         target={'_blank'}
