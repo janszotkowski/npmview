@@ -5,6 +5,7 @@ import { Hero } from '@/components/Hero';
 import { SearchInput } from '@/components/SearchInput';
 import { SearchResults } from '@/components/SearchResults';
 import { searchPackages } from '@/server/search';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export const Route = createFileRoute('/')({
     component: Home,
@@ -12,8 +13,7 @@ export const Route = createFileRoute('/')({
 
 function Home() {
     const [query, setQuery] = useState<string>('');
-
-    const debouncedQuery = query;
+    const debouncedQuery = useDebounce(query, 300);
 
     const {data, isLoading} = useQuery({
         queryKey: ['search', debouncedQuery],
@@ -25,7 +25,7 @@ function Home() {
     const results = data?.objects.map((obj) => obj.package) ?? [];
 
     return (
-        <div className={'flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-4 sm:px-6 lg:px-8'}>
+        <div className={'flex flex-col items-center min-h-screen px-4 sm:px-6 lg:px-8 pt-[20vh]'}>
             <div className={'w-full max-w-2xl space-y-8 text-center'}>
                 <Hero/>
 
