@@ -5,6 +5,7 @@ type SearchResultsProps = {
     results: SearchResultItem[];
     activeIndex: number;
     onSelect: (index: number) => void;
+    className?: string;
 };
 
 export const SearchResults: React.FC<SearchResultsProps> = (props): React.ReactElement => {
@@ -13,7 +14,7 @@ export const SearchResults: React.FC<SearchResultsProps> = (props): React.ReactE
     }
 
     return (
-        <div className={'mt-8 w-full max-w-2xl text-left pb-20'}>
+        <div className={`w-full text-left pb-20 ${props.className || 'mt-8 max-w-2xl'}`}>
             <h3 className={'text-lg font-semibold text-neutral-900 dark:text-white mb-4'}>Search Results</h3>
             <ul
                 className={'space-y-4'}
