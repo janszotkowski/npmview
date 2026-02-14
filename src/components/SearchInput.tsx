@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useRef } from 'react';
+import { ChangeEvent, useEffect, useRef } from 'react';
 import { Loader2, Search } from 'lucide-react';
 
 type SearchInputProps = {
@@ -23,6 +23,18 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, []);
 
+    const onChange = (e: ChangeEvent<HTMLInputElement>): void => {
+        props.onChange(e.target.value);
+    };
+
+    const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const firstResult = document.querySelector('[data-search-result-item]');
+            (firstResult as HTMLElement)?.focus();
+        }
+    };
+
     return (
         <div className={'relative max-w-xl mx-auto group'}>
             <div className={'absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none'}>
@@ -32,7 +44,8 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
                 ref={inputRef}
                 type={'text'}
                 value={props.value}
-                onChange={(e) => props.onChange(e.target.value)}
+                onChange={onChange}
+                onKeyDown={onKeyDown}
                 className={'block w-full pl-11 pr-4 py-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent shadow-sm transition-all text-lg'}
                 placeholder={'Search for a package (e.g., react, zod, vite)...'}
                 autoComplete={'off'}
