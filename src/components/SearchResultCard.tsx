@@ -1,40 +1,42 @@
 import { Link } from '@tanstack/react-router';
 import { SearchResultItem } from '@/types/search.ts';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 type SearchResultCardProps = {
     pkg: SearchResultItem;
+    isActive: boolean;
+    id: string;
+    onFocus: () => void;
 };
 
 export const SearchResultCard: React.FC<SearchResultCardProps> = (props): React.ReactElement => {
     const linkRef = useRef<HTMLAnchorElement>(null);
 
-    const handleKeyDown = (e: React.KeyboardEvent): void => {
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            const next = linkRef.current?.parentElement?.nextElementSibling?.querySelector('a');
-            next?.focus();
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            const prev = linkRef.current?.parentElement?.previousElementSibling?.querySelector('a');
-            if (prev) {
-                prev.focus();
-            } else {
-                const input = document.querySelector('input[type="text"]');
-                (input as HTMLInputElement)?.focus();
-            }
+    useEffect(() => {
+        if (props.isActive) {
+            linkRef.current?.focus();
+            linkRef.current?.scrollIntoView({block: 'nearest', behavior: 'smooth'});
         }
-    };
+    }, [props.isActive]);
 
     return (
-        <li className={'group'}>
+        <li
+            className={'group'}
+            role={'option'}
+            aria-selected={props.isActive}
+            id={props.id}
+        >
             <Link
                 to={'/package/$name'}
                 params={{name: props.pkg.name}}
                 ref={linkRef}
-                onKeyDown={handleKeyDown}
-                className={'block bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 hover:border-red-500 dark:hover:border-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 relative'}
-                data-search-result-item
+                onFocus={props.onFocus}
+                className={twMerge(
+                    'block bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 transition-colors relative outline-none',
+                    'hover:border-red-500 dark:hover:border-red-500',
+                    props.isActive ? 'ring-2 ring-red-500 border-red-500 z-10' : '',
+                )}
             >
                 <div className={'flex justify-between items-start'}>
                     <div>
