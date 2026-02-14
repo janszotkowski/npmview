@@ -5,6 +5,9 @@ import appCss from '../styles/app.css?url';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { QueryClient } from '@tanstack/react-query';
+import { Footer } from '@/components/Footer';
+import { Header } from '@/components/Header';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 export const Route = createRootRouteWithContext<{
     queryClient: QueryClient
@@ -51,7 +54,18 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
     return (
         <RootDocument>
-            <Outlet/>
+            <ThemeProvider
+                defaultTheme={'system'}
+                storageKey={'npmview-theme'}
+            >
+                <div className={'flex min-h-screen flex-col bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50'}>
+                    <Header/>
+                    <div className={'flex-1'}>
+                        <Outlet/>
+                    </div>
+                    <Footer/>
+                </div>
+            </ThemeProvider>
         </RootDocument>
     );
 }
