@@ -80,7 +80,7 @@ test.describe('Navigation', () => {
         await page.goBack();
         await page.waitForURL('/');
 
-        const heading = page.getByRole('heading', {name: /hello npm view/i});
+        const heading = page.getByRole('heading', {name: /npmview/i});
         await expect(heading).toBeVisible();
 
         await page.goForward();

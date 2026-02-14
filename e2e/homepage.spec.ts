@@ -4,9 +4,9 @@ test.describe('Homepage', () => {
     test('loads successfully and displays main heading', async ({page}) => {
         await page.goto('/');
 
-        const heading = page.getByRole('heading', {name: 'Hello NPM View'});
+        const heading = page.getByRole('heading', {name: /npmview/i});
         await expect(heading).toBeVisible();
-        await expect(heading).toHaveText('Hello NPM View');
+        await expect(heading).toHaveText('npmview');
     });
 
     test('has correct page title', async ({page}) => {

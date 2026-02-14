@@ -58,7 +58,7 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
                         aria-label={'Loading results'}
                     />
                 ) : (
-                    <kbd className={'hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800 text-xs text-neutral-500 font-medium'}>
+                    <kbd className={'hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800 text-xs text-neutral-600 dark:text-neutral-400 font-medium'}>
                         ⌘K
                     </kbd>
                 )}
