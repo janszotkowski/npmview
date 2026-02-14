@@ -1,7 +1,24 @@
 import { createFileRoute } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
+import { siteConfig } from '@/utils/seo.ts';
 
 export const Route = createFileRoute('/about')({
+    headers: () => ({
+        'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+    }),
+    head: () => ({
+        meta: [
+            {
+                title: `About | ${siteConfig.title}`,
+            },
+        ],
+        links: [
+            {
+                rel: 'canonical',
+                href: `${siteConfig.url}/about/`,
+            },
+        ],
+    }),
     component: About,
 });
 

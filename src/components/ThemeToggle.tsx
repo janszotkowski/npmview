@@ -23,7 +23,7 @@ export const ThemeToggle: React.FC = (): ReactElement => {
                     key={value}
                     onClick={() => setTheme(value)}
                     className={`
-                        relative flex size-8 items-center justify-center rounded-full transition-all
+                        relative flex size-8 items-center justify-center rounded-full transition-all cursor-pointer
                         ${theme === value
                         ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-white shadow-sm'
                         : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-200'}

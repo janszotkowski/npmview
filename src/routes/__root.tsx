@@ -8,6 +8,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { siteConfig } from '@/utils/seo.ts';
 
 export const Route = createRootRouteWithContext<{
     queryClient: QueryClient
@@ -24,6 +25,9 @@ export const Route = createRootRouteWithContext<{
                 name: 'viewport',
                 content: 'width=device-width, initial-scale=1',
             },
+            {
+                title: siteConfig.title,
+            },
         ],
         links: [
             // {
@@ -38,10 +42,10 @@ export const Route = createRootRouteWithContext<{
                 rel: 'stylesheet',
                 href: appCss,
             },
-            // {
-            //     rel: 'canonical',
-            //     href: siteConfig.url,
-            // },
+            {
+                rel: 'canonical',
+                href: siteConfig.url,
+            },
             // {rel: 'icon', href: '/favicon.ico'},
             // {rel: 'icon', type: 'image/png', sizes: '96x96', href: '/favicon-96x96.png'},
             // {rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png'},
