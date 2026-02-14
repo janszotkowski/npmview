@@ -1,35 +1,9 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getCache, setCache } from './redis';
+import { DownloadRange, PackageDetails } from '@/types/package.ts';
 
 const NPM_REGISTRY_URL = 'https://registry.npmjs.org';
-
-export type PackageDetails = {
-    name: string;
-    description: string;
-    'dist-tags': {
-        latest: string;
-    };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    versions: Record<string, any>;
-    time: {
-        created: string;
-        modified: string;
-        [key: string]: string;
-    };
-    author?: {
-        name: string;
-        email?: string;
-        url?: string;
-    };
-    repository?: {
-        type: string;
-        url: string;
-    };
-    homepage?: string;
-    keywords?: string[];
-    license?: string;
-    readme?: string;
-};
+const NPM_DOWNLOADS_URL = 'https://api.npmjs.org/downloads/range';
 
 export const getPackage = createServerFn({method: 'GET'})
     .inputValidator((name: string) => name)
@@ -44,11 +18,9 @@ export const getPackage = createServerFn({method: 'GET'})
 
         const cachedResult = await getCache<PackageDetails>(cacheKey);
         if (cachedResult) {
-            console.log(`[CACHE HIT] Package: ${name}`);
             return cachedResult;
         }
 
-        console.log(`[API FETCH] Package: ${name}`);
         try {
             const response = await fetch(`${NPM_REGISTRY_URL}/${name}`);
 
@@ -67,5 +39,40 @@ export const getPackage = createServerFn({method: 'GET'})
         } catch (error) {
             console.error(`Package fetch failed for ${name}:`, error);
             throw error;
+        }
+    });
+
+export const getPackageDownloads = createServerFn({method: 'GET'})
+    .inputValidator((name: string) => name)
+    .handler(async (ctx) => {
+        const name = ctx.data;
+
+        if (!name) {
+            throw new Error('Package name is required');
+        }
+
+        const cacheKey = `downloads:month:${name}`;
+
+        const cachedResult = await getCache<DownloadRange>(cacheKey);
+        if (cachedResult) {
+            return cachedResult;
+        }
+
+        try {
+            const response = await fetch(`${NPM_DOWNLOADS_URL}/last-month/${name}`);
+
+            if (!response.ok) {
+                console.warn(`Failed to fetch downloads for ${name}: ${response.statusText}`);
+                return null;
+            }
+
+            const data = (await response.json()) as DownloadRange;
+
+            await setCache(cacheKey, data, 3600);
+
+            return data;
+        } catch (error) {
+            console.error(`Downloads fetch failed for ${name}:`, error);
+            return null;
         }
     });
