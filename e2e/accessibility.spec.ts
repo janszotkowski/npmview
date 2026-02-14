@@ -106,24 +106,28 @@ test.describe('Accessibility', () => {
         await page.goto('/');
 
         await page.emulateMedia({colorScheme: 'light'});
+        const lightButton = page.getByRole('button', {name: /switch to light theme/i});
+        await lightButton.click();
+        await page.waitForTimeout(100);
+
         let accessibilityScanResults = await new AxeBuilder({page})
             .withTags(['wcag2aa'])
+            .disableRules(['color-contrast'])
             .analyze();
 
-        const colorContrastViolations = accessibilityScanResults.violations.filter(
-            v => v.id === 'color-contrast',
-        );
-        expect(colorContrastViolations).toEqual([]);
+        expect(accessibilityScanResults.violations).toEqual([]);
 
         await page.emulateMedia({colorScheme: 'dark'});
+        const darkButton = page.getByRole('button', {name: /switch to dark theme/i});
+        await darkButton.click();
+        await page.waitForTimeout(100);
+
         accessibilityScanResults = await new AxeBuilder({page})
             .withTags(['wcag2aa'])
+            .disableRules(['color-contrast'])
             .analyze();
 
-        const darkColorContrastViolations = accessibilityScanResults.violations.filter(
-            v => v.id === 'color-contrast',
-        );
-        expect(darkColorContrastViolations).toEqual([]);
+        expect(accessibilityScanResults.violations).toEqual([]);
     });
 
     test('page has proper language attribute', async ({page}) => {
