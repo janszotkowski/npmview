@@ -8,10 +8,13 @@ type SearchInputProps = {
     isLoading?: boolean;
     activeIndex: number;
     onFocus: () => void;
+    className?: string;
+    variant?: 'default' | 'header';
 };
 
 export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps): React.ReactElement => {
     const inputRef = useRef<HTMLInputElement>(null);
+    const {variant = 'default'} = props;
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -29,10 +32,12 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
         props.onChange(e.target.value);
     };
 
+    const isHeader = variant === 'header';
+
     return (
-        <div className={'relative max-w-xl mx-auto group'}>
-            <div className={'absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none'}>
-                <Search className={'h-5 w-5 transition-colors text-neutral-400 group-focus-within:text-red-500'}/>
+        <div className={`relative group ${props.className || 'max-w-xl mx-auto'}`}>
+            <div className={`absolute inset-y-0 left-0 flex items-center pointer-events-none ${isHeader ? 'pl-3' : 'pl-4'}`}>
+                <Search className={`transition-colors text-neutral-400 group-focus-within:text-red-500 ${isHeader ? 'h-4 w-4' : 'h-5 w-5'}`}/>
             </div>
             <input
                 ref={inputRef}
@@ -40,8 +45,11 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
                 value={props.value}
                 onChange={onChange}
                 onFocus={props.onFocus}
-                className={'block w-full pl-11 pr-4 py-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent shadow-sm transition-all text-lg'}
-                placeholder={'Search for a package (e.g., react, zod, vite)...'}
+                className={`block w-full rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent shadow-sm transition-all ${isHeader
+                    ? 'pl-9 pr-3 py-2 text-sm'
+                    : 'pl-11 pr-4 py-4 text-lg'
+                }`}
+                placeholder={isHeader ? 'Search packages...' : 'Search for a package (e.g., react, zod, vite)...'}
                 autoComplete={'off'}
                 autoCorrect={'off'}
                 spellCheck={'false'}
