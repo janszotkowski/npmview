@@ -106,7 +106,7 @@ function PackageDetail() {
                             </div>
                         </div>
 
-                        <Suspense fallback={<div className={'h-[400px] w-full animate-pulse rounded-xl bg-neutral-100 dark:bg-neutral-900'}/>}>
+                        <Suspense fallback={<div className={'h-24.5 w-full animate-pulse rounded-xl bg-neutral-100 dark:bg-neutral-900'}/>}>
                             <Await promise={downloads}>
                                 {(resolvedDownloads) => (
                                     <PackageDownloads downloads={resolvedDownloads}/>
