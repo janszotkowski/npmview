@@ -6,8 +6,25 @@ import { SearchInput } from '@/components/SearchInput';
 import { SearchResults } from '@/components/SearchResults';
 import { searchPackages } from '@/server/search';
 import { useDebounce } from '@/hooks/useDebounce';
+import { siteConfig } from '@/utils/seo.ts';
 
 export const Route = createFileRoute('/')({
+    headers: () => ({
+        'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+    }),
+    head: () => ({
+        meta: [
+            {
+                title: `${siteConfig.title}`,
+            },
+        ],
+        links: [
+            {
+                rel: 'canonical',
+                href: `${siteConfig.url}`,
+            },
+        ],
+    }),
     component: Home,
 });
 
