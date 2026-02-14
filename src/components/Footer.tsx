@@ -16,8 +16,12 @@ export const Footer: React.FC = (): ReactElement => {
                     target={'_blank'}
                     rel={'noopener noreferrer'}
                     className={'flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'}
+                    aria-label={'View npmview source code on GitHub'}
                 >
-                    <Github className={'size-5'}/>
+                    <Github
+                        className={'size-5'}
+                        aria-hidden={'true'}
+                    />
                     <span>View on GitHub</span>
                 </a>
             </div>

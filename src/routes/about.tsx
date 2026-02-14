@@ -25,9 +25,16 @@ function About(): ReactElement {
                         Whether you are checking dependencies, versions, or package metadata, we aim to deliver the information you need without the clutter.
                     </p>
 
-                    <div className={'rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100'}>
+                    <div
+                        className={'rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100'}
+                        role={'note'}
+                        aria-label={'Disclaimer'}
+                    >
                         <p className={'font-medium'}>
-                            <span className={'mr-2 text-xl'}>⚠️</span>
+                            <span
+                                className={'mr-2 text-xl'}
+                                aria-hidden={'true'}
+                            >⚠️</span>
                             Disclaimer
                         </p>
                         <p className={'mt-2 text-sm opacity-90'}>
@@ -54,7 +61,10 @@ function About(): ReactElement {
                                 key={tech.name}
                                 className={'flex items-start gap-3'}
                             >
-                                <div className={'mt-1.5 size-1.5 rounded-full bg-neutral-400 dark:bg-neutral-600'}/>
+                                <div
+                                    className={'mt-1.5 size-1.5 rounded-full bg-neutral-400 dark:bg-neutral-600'}
+                                    aria-hidden={'true'}
+                                />
                                 <div>
                                     <span className={'font-semibold text-neutral-900 dark:text-white'}>{tech.name}</span>
                                     <span className={'ml-2 text-sm text-neutral-500 dark:text-neutral-400'}>- {tech.desc}</span>

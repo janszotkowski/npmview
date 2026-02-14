@@ -58,11 +58,20 @@ function RootComponent() {
                 defaultTheme={'system'}
                 storageKey={'npmview-theme'}
             >
+                <a
+                    href={'#main-content'}
+                    className={'sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-neutral-900 focus:px-4 focus:py-2 focus:text-white focus:outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:bg-white dark:focus:text-neutral-900'}
+                >
+                    Skip to main content
+                </a>
                 <div className={'flex min-h-screen flex-col bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50'}>
                     <Header/>
-                    <div className={'flex-1'}>
+                    <main
+                        id={'main-content'}
+                        className={'flex-1'}
+                    >
                         <Outlet/>
-                    </div>
+                    </main>
                     <Footer/>
                 </div>
             </ThemeProvider>

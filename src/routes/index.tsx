@@ -6,8 +6,8 @@ export const Route = createFileRoute('/')({
 
 function Home() {
     return (
-        <div>
-            Hello NPM View
+        <div className={'container mx-auto px-4 py-16'}>
+            <h1 className={'text-4xl font-bold'}>Hello NPM View</h1>
         </div>
     );
 }
