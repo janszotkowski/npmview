@@ -1,7 +1,3 @@
----
-trigger: always_on
----
-
 # AI Agent Instructions for NPM View Project
 
 ## Role
@@ -63,6 +59,18 @@ src/
 - Implement proper caching strategies with Redis
 - Use React Query for efficient data fetching and caching
 - Optimize bundle size (terser with drop_console enabled)
+
+### 4. Accessibility (a11y)
+- Ensure all interactive elements are keyboard accessible
+- Provide proper ARIA labels, roles, and attributes where necessary
+- Maintain proper heading hierarchy (h1 → h2 → h3, no skipping)
+- Ensure sufficient color contrast (WCAG AA minimum: 4.5:1 for normal text, 3:1 for large text)
+- Add alt text for all images (decorative images should have empty alt: `alt={''}`)
+- Use semantic HTML elements (`<nav>`, `<main>`, `<article>`, `<button>`, etc.)
+- Ensure form inputs have associated labels (use `htmlFor` with `id`)
+- Provide focus indicators for all interactive elements
+- Test with screen readers when implementing complex UI
+- Support reduced motion preferences with `prefers-reduced-motion` media query
 
 ## Strict Code Style Rules
 
@@ -186,6 +194,10 @@ src/
 - [ ] Proper error handling
 - [ ] Redis caching where appropriate
 - [ ] SSR-compatible code
+- [ ] Accessibility requirements met (keyboard navigation, ARIA, semantic HTML)
+- [ ] Alt text provided for images
+- [ ] Form labels properly associated
+- [ ] Color contrast meets WCAG AA standards
 
 ## Common Patterns
 
@@ -234,14 +246,81 @@ if (!data) {
 }
 ```
 
+### Accessibility Pattern Examples
+
+#### Accessible Button
+```tsx
+<button
+    type={'button'}
+    aria-label={'Close dialog'}
+    onClick={handleClick}
+>
+    <span aria-hidden={'true'}>×</span>
+</button>
+```
+
+#### Accessible Form
+```tsx
+<form>
+    <label htmlFor={'email'}>
+        Email Address
+    </label>
+    <input
+        id={'email'}
+        type={'email'}
+        aria-required={'true'}
+        aria-describedby={'email-error'}
+    />
+    <span
+        id={'email-error'}
+        role={'alert'}
+    >
+        {error}
+    </span>
+</form>
+```
+
+#### Accessible Image
+```tsx
+// Content image
+<img
+    src={'/photo.jpg'}
+    alt={'Team meeting in the conference room'}
+/>
+
+// Decorative image
+<img
+    src={'/decoration.svg'}
+    alt={''}
+    aria-hidden={'true'}
+/>
+```
+
+#### Skip to Content Link
+```tsx
+<a
+    href={'#main-content'}
+    className={'skip-link'}
+>
+    Skip to main content
+</a>
+<main id={'main-content'}>
+    {/* Content */}
+</main>
+```
+
 ## Critical Rules Summary
 1. ✅ **ALWAYS** use curly braces for JSX prop values
 2. ✅ **ALWAYS** use single quotes (JS/TS and JSX)
 3. ✅ **ALWAYS** use `type` over `interface` (except augmentation)
 4. ✅ **ALWAYS** use `@/` path alias for imports
 5. ✅ **ALWAYS** run lint before committing
-6. ❌ **NEVER** use double quotes (except to avoid escaping)
-7. ❌ **NEVER** use `any` without justification
-8. ❌ **NEVER** disable TypeScript strict checks
-9. ❌ **NEVER** leave console.log in production code (terser drops it)
-10. ❌ **NEVER** bypass ESLint rules without good reason
+6. ✅ **ALWAYS** ensure keyboard accessibility for interactive elements
+7. ✅ **ALWAYS** provide alt text for images
+8. ✅ **ALWAYS** use semantic HTML elements
+9. ❌ **NEVER** use double quotes (except to avoid escaping)
+10. ❌ **NEVER** use `any` without justification
+11. ❌ **NEVER** disable TypeScript strict checks
+12. ❌ **NEVER** leave console.log in production code (terser drops it)
+13. ❌ **NEVER** bypass ESLint rules without good reason
+14. ❌ **NEVER** use `<div>` or `<span>` for buttons or links (use proper semantic elements)
