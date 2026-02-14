@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
 import { siteConfig } from '@/utils/seo.ts';
+import { AlertTriangle } from 'lucide-react';
 
 export const Route = createFileRoute('/about')({
     headers: () => ({
@@ -47,11 +48,8 @@ function About(): ReactElement {
                         role={'note'}
                         aria-label={'Disclaimer'}
                     >
-                        <p className={'font-medium'}>
-                            <span
-                                className={'mr-2 text-xl'}
-                                aria-hidden={'true'}
-                            >⚠️</span>
+                        <p className={'flex font-medium gap-2'}>
+                            <AlertTriangle aria-hidden={'true'}/>
                             Disclaimer
                         </p>
                         <p className={'mt-2 text-sm opacity-90'}>
