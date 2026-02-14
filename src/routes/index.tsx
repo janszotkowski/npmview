@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Hero } from '@/components/Hero';
@@ -29,7 +29,9 @@ export const Route = createFileRoute('/')({
 });
 
 function Home() {
+    const navigate = useNavigate();
     const [query, setQuery] = useState<string>('');
+    const [activeIndex, setActiveIndex] = useState<number>(-1);
     const debouncedQuery = useDebounce(query, 300);
 
     const {data, isLoading} = useQuery({
@@ -41,18 +43,49 @@ function Home() {
 
     const results = data?.objects.map((obj) => obj.package) ?? [];
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const nextIndex = (activeIndex + 1) % results.length;
+            setActiveIndex(nextIndex);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (results.length === 0) {
+                return;
+            }
+            const nextIndex = activeIndex <= 0 ? results.length - 1 : activeIndex - 1;
+            setActiveIndex(nextIndex);
+        } else if (e.key === 'Enter' && activeIndex >= 0 && activeIndex < results.length) {
+            e.preventDefault();
+            navigate({to: '/package/$name', params: {name: results[activeIndex].name}});
+        }
+    };
+
+    if (query !== debouncedQuery && activeIndex !== -1) {
+        setActiveIndex(-1);
+    }
+
     return (
         <div className={'flex flex-col items-center min-h-screen px-4 sm:px-6 lg:px-8 pt-[20vh]'}>
-            <div className={'w-full max-w-2xl space-y-8 text-center'}>
+            <div
+                className={'w-full max-w-2xl space-y-8 text-center'}
+                onKeyDown={handleKeyDown}
+            >
                 <Hero/>
 
                 <SearchInput
                     value={query}
                     onChange={setQuery}
                     isLoading={isLoading}
+                    activeIndex={activeIndex}
+                    onFocus={() => setActiveIndex(-1)}
                 />
 
-                <SearchResults results={results}/>
+                <SearchResults
+                    results={results}
+                    activeIndex={activeIndex}
+                    onSelect={setActiveIndex}
+                />
             </div>
         </div>
     );
