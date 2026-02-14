@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Check, Copy, Terminal } from 'lucide-react';
 
 type InstallCommandProps = {
@@ -7,16 +7,18 @@ type InstallCommandProps = {
 
 type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun';
 
-export const InstallCommand: React.FC<InstallCommandProps> = (props): React.ReactElement => {
-    const [manager, setManager] = useState<PackageManager>('npm');
-    const [copied, setCopied] = useState(false);
+const validManagers: PackageManager[] = ['npm', 'pnpm', 'yarn', 'bun'];
 
-    useEffect(() => {
-        const saved = localStorage.getItem('preferred-package-manager') as PackageManager | null;
-        if (saved && ['npm', 'pnpm', 'yarn', 'bun'].includes(saved)) {
-            setManager(saved);
+export const InstallCommand: React.FC<InstallCommandProps> = (props): React.ReactElement => {
+    const [copied, setCopied] = useState(false);
+    const [manager, setManager] = useState<PackageManager>(() => {
+        if (typeof window === 'undefined') {
+            return 'pnpm';
         }
-    }, []);
+
+        const saved = localStorage.getItem('pkg-manager') as PackageManager;
+        return validManagers.includes(saved) ? saved : 'pnpm';
+    });
 
     const handleManagerChange = (pm: PackageManager): void => {
         setManager(pm);
@@ -45,7 +47,7 @@ export const InstallCommand: React.FC<InstallCommandProps> = (props): React.Reac
     return (
         <div className={'w-full max-w-md overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 shadow-2xl'}>
             <div className={'flex items-center border-b border-neutral-800 bg-neutral-900/50 px-2'}>
-                {(['npm', 'pnpm', 'yarn', 'bun'] as const).map((pm) => (
+                {validManagers.map((pm) => (
                     <button
                         key={pm}
                         onClick={() => handleManagerChange(pm)}
