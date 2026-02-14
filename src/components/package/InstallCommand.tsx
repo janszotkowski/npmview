@@ -16,7 +16,7 @@ export const InstallCommand: React.FC<InstallCommandProps> = (props): React.Reac
             return 'pnpm';
         }
 
-        const saved = localStorage.getItem('pkg-manager') as PackageManager;
+        const saved = localStorage.getItem('preferred-package-manager') as PackageManager;
         return validManagers.includes(saved) ? saved : 'pnpm';
     });
 
