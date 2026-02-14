@@ -84,8 +84,16 @@ function PackageDetail() {
                 <PackageHero pkg={pkg}/>
 
                 <div className={'mt-8 grid gap-8 lg:grid-cols-12'}>
-                    <div className={'lg:col-span-8 space-y-8'}>
-                        <div className={'grid grid-cols-2 gap-4'}>
+                    <div className={'lg:col-span-8 space-y-6'}>
+                        <div className={'grid gap-4 grid-cols-1 md:grid-cols-3'}>
+                            <Suspense fallback={<div className={'h-[106px] w-full animate-pulse rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}/>}>
+                                <Await promise={downloads}>
+                                    {(resolvedDownloads) => (
+                                        <PackageDownloads downloads={resolvedDownloads}/>
+                                    )}
+                                </Await>
+                            </Suspense>
+
                             <div className={'rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
                                 <div className={'flex items-center gap-2 text-neutral-500 mb-2'}>
                                     <Scale className={'size-4'}/>
@@ -105,14 +113,6 @@ function PackageDetail() {
                                 </span>
                             </div>
                         </div>
-
-                        <Suspense fallback={<div className={'h-24.5 w-full animate-pulse rounded-xl bg-neutral-100 dark:bg-neutral-900'}/>}>
-                            <Await promise={downloads}>
-                                {(resolvedDownloads) => (
-                                    <PackageDownloads downloads={resolvedDownloads}/>
-                                )}
-                            </Await>
-                        </Suspense>
 
                         <div className={'space-y-4'}>
                             <h2 className={'text-2xl font-bold tracking-tight'}>Readme</h2>

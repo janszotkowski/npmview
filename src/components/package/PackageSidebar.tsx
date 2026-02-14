@@ -7,7 +7,7 @@ type PackageSidebarProps = {
 
 export const PackageSidebar: React.FC<PackageSidebarProps> = (props): React.ReactElement => {
     return (
-        <div className={'space-y-6'}>
+        <div className={'space-y-4'}>
             <div className={'rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
                 <h3 className={'mb-4 text-sm font-semibold uppercase tracking-wider text-neutral-500'}>Links</h3>
                 <div className={'space-y-3'}>
