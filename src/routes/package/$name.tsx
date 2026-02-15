@@ -108,13 +108,13 @@ function PackageDetail() {
                     stars={stars}
                 />
 
+                <PackageStats
+                    pkg={pkg}
+                    downloads={downloads}
+                />
+
                 <div className={'mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12'}>
                     <div className={'space-y-8 lg:col-span-8'}>
-                        <PackageStats
-                            pkg={pkg}
-                            downloads={downloads}
-                        />
-
                         <Tabs defaultValue={'readme'}>
                             <TabsList className={'mb-4 overflow-x-auto'}>
                                 <TabsTrigger
@@ -138,9 +138,7 @@ function PackageDetail() {
                             </TabsList>
 
                             <TabsContent value={'readme'}>
-                                <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
-                                    <PackageReadme readme={readme}/>
-                                </div>
+                                <PackageReadme readme={readme}/>
                             </TabsContent>
 
                             <TabsContent value={'dependencies'}>

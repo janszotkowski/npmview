@@ -20,8 +20,8 @@ const ReadmeContent = ({content}: { content: string | null | undefined }): React
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw, rehypeHighlight]}
                 components={{
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     img: ({node, ...props}) => (
-                        // eslint-disable-next-line jsx-a11y/alt-text
                         <img
                             {...props}
                             loading={'lazy'}
