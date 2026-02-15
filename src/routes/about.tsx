@@ -88,6 +88,37 @@ function About(): ReactElement {
                         ))}
                     </ul>
                 </section>
+
+                <section className={'space-y-6 rounded-2xl bg-white p-8 shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-900 dark:ring-neutral-800'}>
+                    <h2 className={'text-2xl font-bold text-neutral-900 dark:text-white'}>Data Sources</h2>
+                    <p className={'text-neutral-600 dark:text-neutral-400'}>
+                        To provide comprehensive insights, we aggregate data from multiple trusted public APIs.
+                    </p>
+                    <ul className={'space-y-3'}>
+                        {[
+                            {name: 'NPM Registry', desc: 'Package metadata & versions'},
+                            {name: 'NPM Downloads', desc: 'Download statistics'},
+                            {name: 'BundlePhobia', desc: 'Bundle size analysis'},
+                            {name: 'npms.io', desc: 'Package scoring metrics'},
+                            {name: 'Unpkg', desc: 'README & asset fetching'},
+                            {name: 'GitHub API', desc: 'Repository stars & security'},
+                        ].map((source) => (
+                            <li
+                                key={source.name}
+                                className={'flex items-start gap-3'}
+                            >
+                                <div
+                                    className={'mt-1.5 size-1.5 rounded-full bg-neutral-400 dark:bg-neutral-600'}
+                                    aria-hidden={'true'}
+                                />
+                                <div>
+                                    <span className={'font-semibold text-neutral-900 dark:text-white'}>{source.name}</span>
+                                    <span className={'ml-2 text-sm text-neutral-500 dark:text-neutral-400'}>- {source.desc}</span>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </section>
             </div>
         </div>
     );
