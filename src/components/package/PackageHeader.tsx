@@ -77,7 +77,11 @@ export const PackageHeader: React.FC<PackageHeaderProps> = (props): React.ReactE
                     <div className={'flex flex-wrap items-center gap-4 text-sm text-neutral-600 dark:text-neutral-400'}>
                         <Suspense fallback={null}>
                             <Await promise={props.fullPkg}>
-                                {(fullPkg) => <PublishDate fullPkg={fullPkg} latestVersion={latestVersion}/>}
+                                {(fullPkg) => <PublishDate
+                                    fullPkg={fullPkg}
+                                    latestVersion={latestVersion}
+                                              />
+                                }
                             </Await>
                         </Suspense>
                         <span aria-hidden={'true'}>•</span>
