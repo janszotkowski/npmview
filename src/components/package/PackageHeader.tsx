@@ -1,9 +1,31 @@
 import type { PackageDetails } from '@/types/package';
 import { formatDistanceToNow } from 'date-fns';
 import { Clock, Star } from 'lucide-react';
+import { Suspense } from 'react';
+import { Await } from '@tanstack/react-router';
 
 type PackageHeaderProps = {
     readonly pkg: PackageDetails;
+    readonly stars: Promise<number | null>;
+};
+
+type GithubStarsProps = {
+    stars: number | null;
+};
+
+const GithubStars: React.FC<GithubStarsProps> = (props): React.ReactElement => {
+    if (props.stars === null) {
+        return <span>Star</span>;
+    }
+
+    return (
+        <>
+            <span>Star</span>
+            <span className={'ml-1.5 pl-1.5 border-l border-neutral-200 dark:border-neutral-700 text-xs'}>
+                {new Intl.NumberFormat('en-US', {notation: 'compact'}).format(props.stars)}
+            </span>
+        </>
+    );
 };
 
 export const PackageHeader: React.FC<PackageHeaderProps> = (props): React.ReactElement => {
@@ -61,7 +83,11 @@ export const PackageHeader: React.FC<PackageHeaderProps> = (props): React.ReactE
                             className={'size-4'}
                             aria-hidden={'true'}
                         />
-                        <span>Star</span>
+                        <Suspense fallback={<span>Star</span>}>
+                            <Await promise={props.stars}>
+                                {(resolvedStars) => <GithubStars stars={resolvedStars}/>}
+                            </Await>
+                        </Suspense>
                     </a>
                     <a
                         href={`https://github.com/${props.pkg.repository?.url?.split('github.com/')[1]?.replace('.git', '')}/archive/refs/heads/main.zip`}

@@ -1,5 +1,6 @@
 import { createFileRoute, defer } from '@tanstack/react-router';
 import { getPackage, getPackageDownloads } from '@/server/package';
+import { getGithubStars } from '@/server/github';
 import { defaultMeta, siteConfig } from '@/utils/seo';
 import { PackageHeader } from '@/components/package/PackageHeader';
 import { PackageReadme } from '@/components/package/PackageReadme';
@@ -15,7 +16,9 @@ export const Route = createFileRoute('/package/$name')({
         const pkg = await getPackage({data: params.name});
         const downloads = getPackageDownloads({data: params.name});
 
-        return {pkg, downloads: defer(downloads)};
+        const stars = pkg && pkg.repository && pkg.repository.url ? getGithubStars(pkg.repository.url) : Promise.resolve(null);
+
+        return {pkg, downloads: defer(downloads), stars: defer(stars)};
     },
     head: ({loaderData}) => {
         const pkg = loaderData?.pkg;
@@ -55,7 +58,7 @@ export const Route = createFileRoute('/package/$name')({
 });
 
 function PackageDetail() {
-    const {pkg, downloads} = Route.useLoaderData();
+    const {pkg, downloads, stars} = Route.useLoaderData();
 
     if (!pkg) {
         return (
@@ -69,7 +72,7 @@ function PackageDetail() {
     return (
         <div className={'min-h-screen bg-neutral-50 pb-20 dark:bg-black'}>
             <div className={'container mx-auto max-w-7xl px-4 py-8'}>
-                <PackageHeader pkg={pkg}/>
+                <PackageHeader pkg={pkg} stars={stars}/>
 
                 <div className={'mt-8 space-y-8'}>
                     <PackageStats
