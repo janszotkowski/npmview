@@ -11,7 +11,7 @@ export const DefaultCatchBoundary = ({error}: ErrorComponentProps): React.ReactE
     console.error(error);
 
     return (
-        <div className={'min-h-screen flex items-center justify-center p-4 bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50'}>
+        <div className={'min-h-screen flex flex-col items-center justify-center p-4 bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50'}>
             <div className={'w-full max-w-md p-6 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 shadow-sm'}>
                 <div className={'flex flex-col items-center text-center space-y-4'}>
                     <div className={'p-3 bg-red-100 dark:bg-red-900/30 rounded-full'}>
