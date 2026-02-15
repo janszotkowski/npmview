@@ -96,7 +96,11 @@ function PackageDetail() {
     return (
         <div className={'min-h-screen bg-neutral-50 pb-20 dark:bg-black'}>
             <div className={'container mx-auto max-w-7xl px-4 py-8'}>
-                <PackageHeader pkg={pkg} stars={stars}/>
+                <PackageHeader
+                    pkg={pkg}
+                    fullPkg={fullPkg}
+                    stars={stars}
+                />
 
                 <div className={'mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12'}>
                     <div className={'space-y-8 lg:col-span-8'}>

@@ -1,4 +1,4 @@
-import type { PackageManifest } from '@/types/package';
+import { PackageDetails, PackageManifest } from '@/types/package';
 import { formatDistanceToNow } from 'date-fns';
 import { Clock, Star } from 'lucide-react';
 import { Suspense } from 'react';
@@ -7,6 +7,7 @@ import { Await } from '@tanstack/react-router';
 type PackageHeaderProps = {
     readonly pkg: PackageManifest;
     readonly stars: Promise<number | null>;
+    readonly fullPkg: Promise<PackageDetails | null>;
 };
 
 type GithubStarsProps = {
@@ -28,10 +29,32 @@ const GithubStars: React.FC<GithubStarsProps> = (props): React.ReactElement => {
     );
 };
 
+type PublishDateProps = {
+    fullPkg: PackageDetails | null;
+    latestVersion: string;
+};
+
+const PublishDate: React.FC<PublishDateProps> = (props): React.ReactNode => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const publishDate = (props.fullPkg?.time as any)?.[props.latestVersion] || (props.fullPkg?.time as any)?.modified;
+
+    if (!publishDate) {
+        return null;
+    }
+
+    return (
+        <div className={'flex items-center gap-1.5'}>
+            <Clock
+                className={'size-4'}
+                aria-hidden={'true'}
+            />
+            <span>Updated {formatDistanceToNow(new Date(publishDate))} ago</span>
+        </div>
+    );
+};
+
 export const PackageHeader: React.FC<PackageHeaderProps> = (props): React.ReactElement => {
     const latestVersion = props.pkg.version;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const publishDate = (props.pkg.time as any)?.[latestVersion] || (props.pkg.time as any)?.modified;
 
     return (
         <div className={'mb-8'}>
@@ -52,15 +75,11 @@ export const PackageHeader: React.FC<PackageHeaderProps> = (props): React.ReactE
                     </div>
 
                     <div className={'flex flex-wrap items-center gap-4 text-sm text-neutral-600 dark:text-neutral-400'}>
-                        {publishDate && (
-                            <div className={'flex items-center gap-1.5'}>
-                                <Clock
-                                    className={'size-4'}
-                                    aria-hidden={'true'}
-                                />
-                                <span>Updated {formatDistanceToNow(new Date(publishDate))} ago</span>
-                            </div>
-                        )}
+                        <Suspense fallback={null}>
+                            <Await promise={props.fullPkg}>
+                                {(fullPkg) => <PublishDate fullPkg={fullPkg} latestVersion={latestVersion}/>}
+                            </Await>
+                        </Suspense>
                         <span aria-hidden={'true'}>•</span>
                         <a
                             href={`https://www.npmjs.com/~${props.pkg.maintainers?.[0]?.name}`}
