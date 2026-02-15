@@ -1,4 +1,4 @@
-import { DownloadRange, PackageDetails } from '@/types/package';
+import { DownloadRange, PackageDetails, PackageDownloadsTrend } from '@/types/package';
 import { Suspense, useMemo } from 'react';
 import { InstallCommand } from './InstallCommand';
 import { Await } from '@tanstack/react-router';
@@ -26,7 +26,7 @@ const WeeklyDownloads = ({downloads}: { downloads: DownloadRange | null }) => {
         const firstHalfSum = firstHalf.reduce((acc, curr) => acc + curr.downloads, 0);
         const secondHalfSum = secondHalf.reduce((acc, curr) => acc + curr.downloads, 0);
 
-        let trendDirection: 'up' | 'down' | 'neutral' = 'neutral';
+        let trendDirection: PackageDownloadsTrend = 'neutral';
         let percentChange = 0;
 
         if (firstHalfSum > 0) {
@@ -62,7 +62,7 @@ const WeeklyDownloads = ({downloads}: { downloads: DownloadRange | null }) => {
                 </Tooltip>
             }
             trend={{
-                direction: trend as 'up' | 'down' | 'neutral',
+                direction: trend as PackageDownloadsTrend,
                 percentage,
             }}
         />
@@ -71,11 +71,13 @@ const WeeklyDownloads = ({downloads}: { downloads: DownloadRange | null }) => {
 
 export const PackageStats: React.FC<PackageStatsProps> = (props): React.ReactElement => {
     const latestVersion = props.pkg.versions[props.pkg['dist-tags'].latest];
-    const unpackedSize = latestVersion?.dist.unpackedSize || 0;
-    const fileCount = latestVersion?.dist.fileCount || 0;
+    const unpackedSize = latestVersion?.dist.unpackedSize ?? 0;
+    const fileCount = latestVersion?.dist.fileCount ?? 0;
 
     const formatBytes = (bytes: number): string => {
-        if (bytes === 0) return '0 B';
+        if (bytes === 0) {
+            return '0 B';
+        }
         const k = 1000;
         const sizes = ['B', 'kB', 'MB', 'GB', 'TB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));

@@ -1,12 +1,13 @@
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import React from 'react';
+import { PackageDownloadsTrend } from '@/types/package.ts';
 
 type StatCardProps = {
     title: string;
     value?: React.ReactNode | string | number;
     unit?: string;
     trend?: {
-        direction: 'up' | 'down' | 'neutral';
+        direction: PackageDownloadsTrend;
         percentage: number;
     };
     loading?: boolean;

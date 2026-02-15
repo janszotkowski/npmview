@@ -5,6 +5,10 @@ import { PackageHeader } from '@/components/package/PackageHeader';
 import { PackageReadme } from '@/components/package/PackageReadme';
 import { PackageSidebar } from '@/components/package/PackageSidebar';
 import { PackageStats } from '@/components/package/PackageStats';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
+import { PackageDependencies } from '@/components/package/PackageDependencies';
+import { PackageVersions } from '@/components/package/PackageVersions';
+import { Box, FileText, History } from 'lucide-react';
 
 export const Route = createFileRoute('/package/$name')({
     loader: async ({params}) => {
@@ -75,9 +79,46 @@ function PackageDetail() {
 
                     <div className={'grid gap-8 lg:grid-cols-12'}>
                         <div className={'lg:col-span-8'}>
-                            <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
-                                <PackageReadme readme={pkg.readme}/>
-                            </div>
+                            <Tabs defaultValue={'readme'}>
+                                <TabsList className={'mb-4 overflow-x-auto'}>
+                                    <TabsTrigger
+                                        value={'readme'}
+                                        icon={<FileText className={'h-4 w-4'}/>}
+                                    >
+                                        Readme
+                                    </TabsTrigger>
+                                    <TabsTrigger
+                                        value={'dependencies'}
+                                        icon={<Box className={'h-4 w-4'}/>}
+                                    >
+                                        Dependencies
+                                    </TabsTrigger>
+                                    <TabsTrigger
+                                        value={'versions'}
+                                        icon={<History className={'h-4 w-4'}/>}
+                                    >
+                                        Versions
+                                    </TabsTrigger>
+                                </TabsList>
+
+                                <TabsContent value={'readme'}>
+                                    <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
+                                        <PackageReadme readme={pkg.readme}/>
+                                    </div>
+                                </TabsContent>
+
+                                <TabsContent value={'dependencies'}>
+                                    <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
+                                        <PackageDependencies pkg={pkg}/>
+                                    </div>
+                                </TabsContent>
+
+                                <TabsContent value={'versions'}>
+                                    <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
+                                        <PackageVersions pkg={pkg}/>
+                                    </div>
+                                </TabsContent>
+                            </Tabs>
                         </div>
 
                         <div className={'lg:col-span-4'}>

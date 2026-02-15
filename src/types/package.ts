@@ -13,6 +13,9 @@ export type PackageDetails = {
             fileCount?: number;
             unpackedSize?: number;
         };
+        dependencies?: Record<string, string>;
+        devDependencies?: Record<string, string>;
+        peerDependencies?: Record<string, string>;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         [key: string]: any;
     }>;
@@ -49,3 +52,5 @@ export type DownloadRange = {
     end: string;
     package: string;
 };
+
+export type PackageDownloadsTrend = 'up' | 'down' | 'neutral';
