@@ -65,11 +65,11 @@ export const PackageHeader: React.FC<PackageHeaderProps> = (props): React.ReactE
                             {props.pkg.name}
                         </h1>
                         <div className={'flex items-center gap-2'}>
-                            <span className={'rounded-full border border-red-200 bg-red-100 px-2.5 py-0.5 text-xs font-bold text-red-800 dark:border-red-900 dark:bg-red-900/30 dark:text-red-300'}>
+                            <span className={'rounded-full border border-red-200 bg-red-100 px-2.5 py-0.5 font-bold text-red-800 dark:border-red-900 dark:bg-red-900/30 dark:text-red-300'}>
                                 v{latestVersion}
                             </span>
                             {props.pkg.license && (
-                                <span className={'rounded-full border border-neutral-200 bg-neutral-100 px-2.5 py-0.5 text-xs font-bold text-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'}>
+                                <span className={'rounded-full border border-neutral-200 bg-neutral-100 px-2.5 py-0.5 font-bold text-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300'}>
                                     {props.pkg.license}
                                 </span>
                             )}

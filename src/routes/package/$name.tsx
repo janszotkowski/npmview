@@ -1,5 +1,5 @@
 import { createFileRoute, defer } from '@tanstack/react-router';
-import { getBundleSize, getPackage, getPackageDownloads, getPackageManifest, getPackageReadme, getPackageScore } from '@/server/package';
+import { getBundleSize, getPackage, getPackageDownloads, getPackageManifest, getPackageReadme, getPackageScore, getSecurityAdvisories } from '@/server/package';
 import { getGithubStars } from '@/server/github';
 import { defaultMeta, siteConfig } from '@/utils/seo';
 import { PackageHeader } from '@/components/package/PackageHeader';
@@ -9,9 +9,11 @@ import { PackageStats } from '@/components/package/PackageStats';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
 import { PackageDependencies } from '@/components/package/PackageDependencies';
 import { PackageVersions } from '@/components/package/PackageVersions';
-import { Box, FileText, History } from 'lucide-react';
+import { Box, FileText, History, Shield } from 'lucide-react';
 import { InstallCommand } from '@/components/package/InstallCommand.tsx';
 import { PackageSkeleton } from '@/components/package/PackageSkeleton';
+import { SecurityAlerts } from '@/components/package/SecurityAlerts';
+import { SecurityAlertsTab } from '@/components/package/SecurityAlertsTab';
 
 export const Route = createFileRoute('/package/$name')({
     loader: async (opts) => {
@@ -26,6 +28,7 @@ export const Route = createFileRoute('/package/$name')({
                 fullPkg: defer(Promise.resolve(null)),
                 bundleSize: defer(Promise.resolve(null)),
                 score: defer(Promise.resolve(null)),
+                advisories: defer(Promise.resolve(null)),
             };
         }
 
@@ -34,6 +37,7 @@ export const Route = createFileRoute('/package/$name')({
         const fullPkgPromise = getPackage({data: opts.params.name});
         const bundleSizePromise = getBundleSize({data: opts.params.name});
         const scorePromise = getPackageScore({data: opts.params.name});
+        const advisoriesPromise = getSecurityAdvisories({data: opts.params.name});
 
         const starsPromise = (pkg.repository?.url) ? getGithubStars(pkg.repository.url) : Promise.resolve(null);
 
@@ -45,6 +49,7 @@ export const Route = createFileRoute('/package/$name')({
             stars: defer(starsPromise),
             bundleSize: defer(bundleSizePromise),
             score: defer(scorePromise),
+            advisories: defer(advisoriesPromise),
         };
     },
     head: ({loaderData}) => {
@@ -94,7 +99,7 @@ export const Route = createFileRoute('/package/$name')({
 });
 
 function PackageDetail() {
-    const {pkg, readme, downloads, stars, fullPkg, bundleSize, score} = Route.useLoaderData();
+    const {pkg, readme, downloads, stars, fullPkg, bundleSize, score, advisories} = Route.useLoaderData();
 
     if (!pkg) {
         return (
@@ -143,6 +148,12 @@ function PackageDetail() {
                                 >
                                     Versions
                                 </TabsTrigger>
+                                <TabsTrigger
+                                    value={'security'}
+                                    icon={<Shield className={'h-4 w-4'}/>}
+                                >
+                                    Security
+                                </TabsTrigger>
                             </TabsList>
 
                             <TabsContent value={'readme'}>
@@ -163,11 +174,18 @@ function PackageDetail() {
                                     />
                                 </div>
                             </TabsContent>
+
+                            <TabsContent value={'security'}>
+                                <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
+                                    <SecurityAlertsTab advisories={advisories}/>
+                                </div>
+                            </TabsContent>
                         </Tabs>
                     </div>
 
                     <div className={'space-y-8 lg:col-span-4'}>
                         <InstallCommand packageName={pkg.name}/>
+                        <SecurityAlerts advisories={advisories}/>
                         <PackageSidebar pkg={pkg}/>
                     </div>
                 </div>
