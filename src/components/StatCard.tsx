@@ -3,7 +3,7 @@ import React from 'react';
 
 type StatCardProps = {
     title: string;
-    value?: string | number;
+    value?: React.ReactNode | string | number;
     unit?: string;
     trend?: {
         direction: 'up' | 'down' | 'neutral';
@@ -26,7 +26,7 @@ export const StatCard: React.FC<StatCardProps> = (props): React.ReactElement => 
     }
 
     return (
-        <div className={`bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm border border-neutral-100 dark:border-neutral-800 h-full ${props.className ?? ''}`}>
+        <div className={`cursor-default bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm border border-neutral-100 dark:border-neutral-800 h-full ${props.className ?? ''}`}>
             <h3 className={'text-sm font-semibold text-neutral-500 mb-2'}>{props.title}</h3>
             <div className={'flex items-end gap-2'}>
                 <span className={'text-4xl font-bold text-neutral-900 dark:text-white'}>
