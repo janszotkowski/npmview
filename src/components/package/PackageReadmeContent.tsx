@@ -24,6 +24,7 @@ const PackageReadmeContent = ({content}: { content: string | null | undefined })
                     rehypeHighlight,
                 ]}
                 components={{
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     img: ({node, ...props}) => (
                         <img
                             {...props}
