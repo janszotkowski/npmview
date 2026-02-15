@@ -1,17 +1,7 @@
 import { AlertTriangle, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { Await } from '@tanstack/react-router';
 import React, { Suspense } from 'react';
-
-export type SecurityAdvisory = {
-    id: string;
-    ghsa_id: string;
-    summary: string;
-    severity: 'low' | 'moderate' | 'high' | 'critical' | 'medium';
-    url: string;
-    published_at: string;
-    vulnerable_versions?: string;
-    patched_versions?: string;
-};
+import type { SecurityAdvisory } from '@/types/security';
 
 type SecurityAlertsProps = {
     advisories: Promise<SecurityAdvisory[] | null>;

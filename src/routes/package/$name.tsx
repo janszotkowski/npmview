@@ -13,7 +13,8 @@ import { InstallCommand } from '@/components/package/InstallCommand.tsx';
 import { PackageSkeleton } from '@/components/package/PackageSkeleton';
 import { SecurityAlerts } from '@/components/package/SecurityAlerts';
 import { SecurityAlertsTab } from '@/components/package/SecurityAlertsTab';
-import { getGithubStars, getSecurityAdvisories } from '@/server/github.ts';
+import { getGithubStars } from '@/server/github.ts';
+import { getSecurityAdvisories } from '@/server/security.ts';
 
 export const Route = createFileRoute('/package/$name')({
     loader: async (opts) => {

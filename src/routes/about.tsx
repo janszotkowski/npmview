@@ -101,7 +101,8 @@ function About(): ReactElement {
                             {name: 'BundlePhobia', desc: 'Bundle size analysis'},
                             {name: 'npms.io', desc: 'Package scoring metrics'},
                             {name: 'Unpkg', desc: 'README & asset fetching'},
-                            {name: 'GitHub API', desc: 'Repository stars & security'},
+                            {name: 'GitHub API', desc: 'Repository stars'},
+                            {name: 'OSV', desc: 'Security vulnerability data'},
                         ].map((source) => (
                             <li
                                 key={source.name}

@@ -23,7 +23,8 @@ This project aggregates data from multiple public APIs to provide a comprehensiv
 - **[BundlePhobia](https://bundlephobia.com)**: Used to fetch bundle size, minified size, and gzip size information.
 - **[npms.io](https://npms.io)**: Supplies package scoring metrics (Quality, Popularity, Maintenance).
 - **[Unpkg](https://unpkg.com)**: Used to fetch the raw README.md files and other assets from package distributions.
-- **[GitHub REST API](https://docs.github.com/en/rest)**: Fetches repository star counts and security advisories.
+- **[GitHub REST API](https://docs.github.com/en/rest)**: Fetches repository star counts.
+- **[OSV (Open Source Vulnerabilities)](https://osv.dev)**: Provides comprehensive security vulnerability data for npm packages.
 
 ## 🛠️ Tech Stack
 

@@ -1,7 +1,8 @@
 import { ShieldCheck } from 'lucide-react';
 import { Await } from '@tanstack/react-router';
 import React, { Suspense } from 'react';
-import { SecurityAlertCard, type SecurityAdvisory } from './SecurityAlerts';
+import type { SecurityAdvisory } from '@/types/security';
+import { SecurityAlertCard } from './SecurityAlerts';
 
 type SecurityAlertsTabProps = {
     advisories: Promise<SecurityAdvisory[] | null>;
