@@ -46,7 +46,11 @@ export const InstallCommand: React.FC<InstallCommandProps> = (props): React.Reac
 
     return (
         <div className={'w-full overflow-hidden rounded-xl border border-neutral-800 bg-[#0c0c0c] shadow-2xl'}>
-            <div className={'flex items-center border-b border-neutral-800 bg-[#151515] px-2'}>
+            <div
+                className={'flex items-center border-b border-neutral-800 bg-[#151515] px-2'}
+                role={'radiogroup'}
+                aria-label={'Package Manager'}
+            >
                 {validManagers.map((pm) => (
                     <button
                         key={pm}
@@ -56,6 +60,8 @@ export const InstallCommand: React.FC<InstallCommandProps> = (props): React.Reac
                             : 'border-transparent text-neutral-400 hover:text-neutral-200'
                         }`}
                         type={'button'}
+                        role={'radio'}
+                        aria-checked={manager === pm}
                     >
                         {pm}
                     </button>

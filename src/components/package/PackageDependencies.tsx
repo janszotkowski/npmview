@@ -79,10 +79,10 @@ const DependencyList: React.FC<DependencyListProps> = (props): React.ReactElemen
                         preload={'intent'}
                         className={'group flex flex-col rounded-lg border border-neutral-200 p-3 hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-900'}
                     >
-                        <span className={'font-medium text-neutral-900 group-hover:text-red-600 dark:text-neutral-100 dark:group-hover:text-red-500'}>
+                        <span className={'font-medium text-neutral-900 group-hover:text-red-700 dark:text-neutral-100 dark:group-hover:text-red-500'}>
                             {name}
                         </span>
-                        <span className={'mt-1 text-sm text-neutral-500'}>
+                        <span className={'mt-1 text-sm text-neutral-600'}>
                             {version}
                         </span>
                     </Link>

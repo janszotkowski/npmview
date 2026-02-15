@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 type SearchResultCardProps = {
-    pkg: SearchResultItem;
+    readonly pkg: SearchResultItem;
     isActive: boolean;
     id: string;
     onFocus: () => void;

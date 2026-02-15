@@ -6,7 +6,7 @@ import { StatCard } from '@/components/StatCard';
 import { Tooltip } from '@/components/Tooltip';
 
 type PackageStatsProps = {
-    pkg: PackageDetails;
+    readonly pkg: PackageDetails;
     downloads: Promise<DownloadRange | null>;
 };
 

@@ -14,7 +14,7 @@ type SearchInputProps = {
 
 export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps): React.ReactElement => {
     const inputRef = useRef<HTMLInputElement>(null);
-    const {variant = 'default'} = props;
+    const { variant = 'default' } = props;
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -37,7 +37,10 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
     return (
         <div className={`relative group ${props.className || 'w-full'}`}>
             <div className={`absolute inset-y-0 left-0 flex items-center pointer-events-none ${isHeader ? 'pl-3' : 'pl-5'}`}>
-                <Search className={`transition-colors text-neutral-400 group-focus-within:text-red-500 ${isHeader ? 'h-4 w-4' : 'h-5 w-5'}`}/>
+                <Search
+                    className={`transition-colors text-neutral-500 group-focus-within:text-red-600 ${isHeader ? 'h-4 w-4' : 'h-5 w-5'}`}
+                    aria-hidden={'true'}
+                />
             </div>
             <input
                 ref={inputRef}
@@ -45,11 +48,12 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
                 value={props.value}
                 onChange={onChange}
                 onFocus={props.onFocus}
-                className={`block w-full rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-red-500/10 focus:border-red-500 shadow-sm transition-all ${isHeader
+                className={`block w-full rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white placeholder-neutral-500 focus:outline-none focus:ring-4 focus:ring-red-500/10 focus:border-red-500 shadow-sm transition-all ${isHeader
                     ? 'pl-9 pr-3 py-2 text-sm'
                     : 'pl-12 pr-32 py-4 text-base sm:text-lg'
-                }`}
+                    }`}
                 placeholder={isHeader ? 'Search packages...' : 'Search npm packages (e.g., react, lodash, tailwind)...'}
+                aria-label={isHeader ? 'Search packages' : 'Search npm packages'}
                 autoComplete={'off'}
                 autoCorrect={'off'}
                 spellCheck={'false'}
@@ -75,7 +79,7 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
                                     ⌘K
                                 </kbd>
                                 <button
-                                    className={'bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-xl transition-colors text-sm'}
+                                    className={'bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-xl transition-colors text-sm'}
                                 >
                                     Search
                                 </button>

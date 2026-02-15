@@ -28,13 +28,13 @@ export const StatCard: React.FC<StatCardProps> = (props): React.ReactElement => 
 
     return (
         <div className={`cursor-default bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm border border-neutral-100 dark:border-neutral-800 h-full ${props.className ?? ''}`}>
-            <h3 className={'text-sm font-semibold text-neutral-500 mb-2'}>{props.title}</h3>
+            <h3 className={'text-sm font-semibold text-neutral-600 mb-2'}>{props.title}</h3>
             <div className={'flex items-end gap-2'}>
                 <span className={'text-4xl font-bold text-neutral-900 dark:text-white'}>
                     {props.value}
                 </span>
                 {props.unit && (
-                    <span className={'text-xl font-medium text-neutral-500 mb-1.5'}>
+                    <span className={'text-xl font-medium text-neutral-600 mb-1.5'}>
                         {props.unit}
                     </span>
                 )}

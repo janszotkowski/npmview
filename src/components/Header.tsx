@@ -14,7 +14,10 @@ export const Header: React.FC = (): ReactElement => {
     return (
         <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? 'border-b border-neutral-200 bg-white/80 backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/80' : 'border-b border-transparent bg-transparent'}`}>
             <div className={'container mx-auto flex h-16 items-center justify-between px-4'}>
-                <div className={'flex items-center gap-8 flex-1'}>
+                <nav
+                    className={'flex items-center gap-8 flex-1'}
+                    aria-label={'Main navigation'}
+                >
                     <Link
                         to={'/'}
                         className={'flex items-center gap-2 font-bold text-xl tracking-tight hover:opacity-80 transition-opacity shrink-0'}
@@ -32,7 +35,7 @@ export const Header: React.FC = (): ReactElement => {
                         key={pathname}
                         isPackagePage={isPackagePage}
                     />
-                </div>
+                </nav>
 
                 <div className={'flex items-center gap-4 shrink-0 ml-4'}>
                     <a

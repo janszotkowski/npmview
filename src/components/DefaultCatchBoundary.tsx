@@ -11,10 +11,10 @@ export const DefaultCatchBoundary = ({error}: ErrorComponentProps): React.ReactE
     console.error(error);
 
     return (
-        <div className={'min-h-screen flex items-center justify-center p-4 bg-background text-foreground'}>
-            <div className={'w-full max-w-md p-6 bg-card rounded-lg border border-border shadow-sm'}>
+        <div className={'min-h-screen flex items-center justify-center p-4 bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50'}>
+            <div className={'w-full max-w-md p-6 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 shadow-sm'}>
                 <div className={'flex flex-col items-center text-center space-y-4'}>
-                    <div className={'p-3 bg-destructive/10 rounded-full'}>
+                    <div className={'p-3 bg-red-100 dark:bg-red-900/30 rounded-full'}>
                         <svg
                             xmlns={'http://www.w3.org/2000/svg'}
                             width={'24'}
@@ -25,7 +25,7 @@ export const DefaultCatchBoundary = ({error}: ErrorComponentProps): React.ReactE
                             strokeWidth={'2'}
                             strokeLinecap={'round'}
                             strokeLinejoin={'round'}
-                            className={'lucide lucide-alert-circle text-destructive h-8 w-8'}
+                            className={'text-red-600 dark:text-red-500 h-8 w-8'}
                         >
                             <circle
                                 cx={'12'}
@@ -47,7 +47,7 @@ export const DefaultCatchBoundary = ({error}: ErrorComponentProps): React.ReactE
                         </svg>
                     </div>
                     <h2 className={'text-xl font-semibold'}>Something went wrong!</h2>
-                    <p className={'text-muted-foreground text-sm'}>
+                    <p className={'text-neutral-600 dark:text-neutral-400 text-sm'}>
                         {error.message || 'An unexpected error occurred.'}
                     </p>
                     <div className={'flex gap-2 w-full pt-2'}>
@@ -55,21 +55,21 @@ export const DefaultCatchBoundary = ({error}: ErrorComponentProps): React.ReactE
                             onClick={() => {
                                 router.invalidate();
                             }}
-                            className={'flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium text-sm'}
+                            className={'flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-medium text-sm'}
                         >
                             Try Again
                         </button>
                         {isRoot ? (
                             <Link
                                 to={'/'}
-                                className={'flex-1 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors font-medium text-sm flex items-center justify-center'}
+                                className={'flex-1 px-4 py-2 bg-neutral-200 text-neutral-900 dark:bg-neutral-800 dark:text-white rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors font-medium text-sm flex items-center justify-center'}
                             >
                                 Home
                             </Link>
                         ) : (
                             <Link
                                 to={'/'}
-                                className={'flex-1 px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors font-medium text-sm flex items-center justify-center'}
+                                className={'flex-1 px-4 py-2 bg-neutral-200 text-neutral-900 dark:bg-neutral-800 dark:text-white rounded-md hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors font-medium text-sm flex items-center justify-center'}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     window.history.back();

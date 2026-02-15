@@ -3,7 +3,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Clock, Star } from 'lucide-react';
 
 type PackageHeaderProps = {
-    pkg: PackageDetails;
+    readonly pkg: PackageDetails;
 };
 
 export const PackageHeader: React.FC<PackageHeaderProps> = (props): React.ReactElement => {
@@ -18,24 +18,27 @@ export const PackageHeader: React.FC<PackageHeaderProps> = (props): React.ReactE
                         <h1 className={'text-4xl md:text-5xl font-extrabold text-neutral-900 dark:text-white tracking-tight'}>
                             {props.pkg.name}
                         </h1>
-                        <span className={'px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-900'}>
+                        <span className={'px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-900'}>
                             v{latestVersion}
                         </span>
                         {props.pkg.license && (
-                            <span className={'px-2.5 py-0.5 rounded-full text-xs font-bold bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-700'}>
+                            <span className={'px-2.5 py-0.5 rounded-full text-xs font-bold bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-700'}>
                                 {props.pkg.license} LICENSE
                             </span>
                         )}
                     </div>
 
-                    <div className={'flex flex-wrap items-center gap-4 text-sm text-neutral-500 dark:text-neutral-400'}>
+                    <div className={'flex flex-wrap items-center gap-4 text-sm text-neutral-600 dark:text-neutral-400'}>
                         {publishDate && (
                             <div className={'flex items-center gap-1.5'}>
-                                <Clock className={'size-4'}/>
+                                <Clock
+                                    className={'size-4'}
+                                    aria-hidden={'true'}
+                                />
                                 <span>Updated {formatDistanceToNow(new Date(publishDate))} ago</span>
                             </div>
                         )}
-                        <span>•</span>
+                        <span aria-hidden={'true'}>•</span>
                         <a
                             href={`https://www.npmjs.com/~${props.pkg.maintainers?.[0]?.name}`}
                             target={'_blank'}
@@ -54,7 +57,10 @@ export const PackageHeader: React.FC<PackageHeaderProps> = (props): React.ReactE
                         rel={'noopener noreferrer'}
                         className={'inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-neutral-200 text-neutral-700 font-medium hover:bg-neutral-50 transition-colors shadow-sm dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-800'}
                     >
-                        <Star className={'size-4'}/>
+                        <Star
+                            className={'size-4'}
+                            aria-hidden={'true'}
+                        />
                         <span>Star</span>
                     </a>
                     <a

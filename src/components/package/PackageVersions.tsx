@@ -47,7 +47,7 @@ export const PackageVersions: React.FC<PackageVersionsProps> = (props): React.Re
                                 <time
                                     dateTime={date}
                                     title={new Date(date).toLocaleString()}
-                                    className={'text-sm text-neutral-500'}
+                                    className={'text-sm text-neutral-600'}
                                 >
                                     {formatDistanceToNow(new Date(date), {addSuffix: true})}
                                 </time>
