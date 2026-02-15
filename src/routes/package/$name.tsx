@@ -1,5 +1,5 @@
 import { createFileRoute, defer } from '@tanstack/react-router';
-import { getPackage, getPackageDownloads } from '@/server/package';
+import { getPackage, getPackageDownloads, getPackageManifest, getPackageReadme } from '@/server/package';
 import { getGithubStars } from '@/server/github';
 import { defaultMeta, siteConfig } from '@/utils/seo';
 import { PackageHeader } from '@/components/package/PackageHeader';
@@ -14,13 +14,32 @@ import { InstallCommand } from '@/components/package/InstallCommand.tsx';
 import { PackageSkeleton } from '@/components/package/PackageSkeleton';
 
 export const Route = createFileRoute('/package/$name')({
-    loader: async ({params}) => {
-        const pkg = await getPackage({data: params.name});
-        const downloads = getPackageDownloads({data: params.name});
+    loader: async (opts) => {
+        const pkg = await getPackageManifest({data: opts.params.name});
 
-        const stars = pkg && pkg.repository && pkg.repository.url ? getGithubStars(pkg.repository.url) : Promise.resolve(null);
+        if (!pkg) {
+            return {
+                pkg: null,
+                readme: defer(Promise.resolve(null)),
+                downloads: defer(Promise.resolve(null)),
+                stars: defer(Promise.resolve(null)),
+                fullPkg: defer(Promise.resolve(null)),
+            };
+        }
 
-        return {pkg, downloads: defer(downloads), stars: defer(stars)};
+        const readmePromise = getPackageReadme({data: opts.params.name});
+        const downloadsPromise = getPackageDownloads({data: opts.params.name});
+        const fullPkgPromise = getPackage({data: opts.params.name});
+
+        const starsPromise = (pkg.repository?.url) ? getGithubStars(pkg.repository.url) : Promise.resolve(null);
+
+        return {
+            pkg,
+            readme: defer(readmePromise),
+            fullPkg: defer(fullPkgPromise),
+            downloads: defer(downloadsPromise),
+            stars: defer(starsPromise),
+        };
     },
     head: ({loaderData}) => {
         const pkg = loaderData?.pkg;
@@ -59,10 +78,11 @@ export const Route = createFileRoute('/package/$name')({
     component: PackageDetail,
     pendingComponent: PackageSkeleton,
     pendingMs: 0,
+    staleTime: 60_000,
 });
 
 function PackageDetail() {
-    const {pkg, downloads, stars} = Route.useLoaderData();
+    const {pkg, readme, downloads, stars, fullPkg} = Route.useLoaderData();
 
     if (!pkg) {
         return (
@@ -109,7 +129,7 @@ function PackageDetail() {
 
                             <TabsContent value={'readme'}>
                                 <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
-                                    <PackageReadme readme={pkg.readme}/>
+                                    <PackageReadme readme={readme}/>
                                 </div>
                             </TabsContent>
 
@@ -121,7 +141,10 @@ function PackageDetail() {
 
                             <TabsContent value={'versions'}>
                                 <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
-                                    <PackageVersions pkg={pkg}/>
+                                    <PackageVersions
+                                        pkg={pkg}
+                                        fullPkg={fullPkg}
+                                    />
                                 </div>
                             </TabsContent>
                         </Tabs>

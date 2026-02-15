@@ -1,23 +1,12 @@
-import { PackageDetails } from '@/types/package';
+import { PackageManifest } from '@/types/package';
 import { Link } from '@tanstack/react-router';
 
 type PackageDependenciesProps = {
-    readonly pkg: PackageDetails;
+    readonly pkg: PackageManifest;
 };
 
 export const PackageDependencies: React.FC<PackageDependenciesProps> = (props): React.ReactElement => {
-    const latestVersion = props.pkg['dist-tags'].latest;
-    const currentVersion = props.pkg.versions[latestVersion];
-
-    if (!currentVersion) {
-        return (
-            <div className={'p-8 text-center text-neutral-500'}>
-                No version information available.
-            </div>
-        );
-    }
-
-    const {dependencies, devDependencies, peerDependencies} = currentVersion;
+    const {dependencies, devDependencies, peerDependencies} = props.pkg;
     const hasDependencies = dependencies ?? devDependencies ?? peerDependencies;
 
     if (!hasDependencies) {

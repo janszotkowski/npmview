@@ -1,12 +1,18 @@
-import { PackageDetails } from '@/types/package';
+import { PackageDetails, PackageManifest } from '@/types/package';
 import { formatDistanceToNow } from 'date-fns';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { Await } from '@tanstack/react-router';
 
 type PackageVersionsProps = {
-    readonly pkg: PackageDetails;
+    readonly pkg: PackageManifest;
+    readonly fullPkg: Promise<PackageDetails | null>;
 };
 
-export const PackageVersions: React.FC<PackageVersionsProps> = (props): React.ReactElement => {
+type VersionListProps = {
+    pkg: PackageDetails;
+}
+
+const VersionList: React.FC<VersionListProps> = (props): React.ReactElement => {
     const versions = Object.keys(props.pkg.versions).reverse();
     const time = props.pkg.time;
     const [showAllVersions, setShowAllVersions] = useState(false);
@@ -67,5 +73,24 @@ export const PackageVersions: React.FC<PackageVersionsProps> = (props): React.Re
                 </button>
             )}
         </div>
+    );
+};
+
+export const PackageVersions: React.FC<PackageVersionsProps> = (props): React.ReactElement => {
+    return (
+        <Suspense fallback={
+            <div className={'space-y-4'}>
+                <div className={'h-8 w-32 bg-neutral-100 dark:bg-neutral-800 rounded animate-pulse'}/>
+                <div className={'space-y-2'}>
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className={'h-12 bg-neutral-100 dark:bg-neutral-800 rounded animate-pulse'}/>
+                    ))}
+                </div>
+            </div>
+        }>
+            <Await promise={props.fullPkg}>
+                {(fullPkg) => fullPkg ? <VersionList pkg={fullPkg}/> : <div>Failed to load versions</div>}
+            </Await>
+        </Suspense>
     );
 };

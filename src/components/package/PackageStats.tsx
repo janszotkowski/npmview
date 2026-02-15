@@ -1,11 +1,11 @@
-import { DownloadRange, PackageDetails, PackageDownloadsTrend } from '@/types/package';
+import { DownloadRange, PackageDownloadsTrend, PackageManifest } from '@/types/package';
 import { Suspense, useMemo } from 'react';
 import { Await } from '@tanstack/react-router';
 import { StatCard } from '@/components/StatCard';
 import { Tooltip } from '@/components/Tooltip';
 
 type PackageStatsProps = {
-    readonly pkg: PackageDetails;
+    readonly pkg: PackageManifest;
     downloads: Promise<DownloadRange | null>;
 };
 
@@ -69,9 +69,8 @@ const WeeklyDownloads = ({downloads}: { downloads: DownloadRange | null }) => {
 };
 
 export const PackageStats: React.FC<PackageStatsProps> = (props): React.ReactElement => {
-    const latestVersion = props.pkg.versions[props.pkg['dist-tags'].latest];
-    const unpackedSize = latestVersion?.dist.unpackedSize ?? 0;
-    const fileCount = latestVersion?.dist.fileCount ?? 0;
+    const unpackedSize = props.pkg.dist.unpackedSize ?? 0;
+    const fileCount = props.pkg.dist.fileCount ?? 0;
 
     const formatBytes = (bytes: number): string => {
         if (bytes === 0) {

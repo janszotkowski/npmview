@@ -1,11 +1,11 @@
-import type { PackageDetails } from '@/types/package';
+import type { PackageManifest } from '@/types/package';
 import { formatDistanceToNow } from 'date-fns';
 import { Clock, Star } from 'lucide-react';
 import { Suspense } from 'react';
 import { Await } from '@tanstack/react-router';
 
 type PackageHeaderProps = {
-    readonly pkg: PackageDetails;
+    readonly pkg: PackageManifest;
     readonly stars: Promise<number | null>;
 };
 
@@ -29,8 +29,9 @@ const GithubStars: React.FC<GithubStarsProps> = (props): React.ReactElement => {
 };
 
 export const PackageHeader: React.FC<PackageHeaderProps> = (props): React.ReactElement => {
-    const latestVersion = props.pkg['dist-tags'].latest;
-    const publishDate = props.pkg.time[latestVersion];
+    const latestVersion = props.pkg.version;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const publishDate = (props.pkg.time as any)?.[latestVersion] || (props.pkg.time as any)?.modified;
 
     return (
         <div className={'mb-8'}>

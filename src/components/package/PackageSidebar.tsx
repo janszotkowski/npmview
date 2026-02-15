@@ -1,8 +1,8 @@
-import type { PackageDetails } from '@/types/package';
+import type { PackageManifest } from '@/types/package';
 import { Box, Github, Home } from 'lucide-react';
 
 type PackageSidebarProps = {
-    readonly pkg: PackageDetails;
+    readonly pkg: PackageManifest;
 };
 
 export const PackageSidebar: React.FC<PackageSidebarProps> = (props): React.ReactElement => {

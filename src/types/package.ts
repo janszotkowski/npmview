@@ -1,24 +1,46 @@
+export type PackageManifest = {
+    name: string;
+    version: string;
+    description: string;
+    dist: {
+        shasum: string;
+        tarball: string;
+        fileCount?: number;
+        unpackedSize?: number;
+    };
+    dependencies?: Record<string, string>;
+    devDependencies?: Record<string, string>;
+    peerDependencies?: Record<string, string>;
+    author?: {
+        name: string;
+        email?: string;
+        url?: string;
+    };
+    maintainers?: Array<{
+        name: string;
+        email?: string;
+    }>;
+    repository?: {
+        type: string;
+        url: string;
+    };
+    homepage?: string;
+    keywords?: string[];
+    license?: string;
+    readme?: string;
+    _id?: string;
+    gitHead?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
+};
+
 export type PackageDetails = {
     name: string;
     description: string;
     'dist-tags': {
         latest: string;
     };
-    versions: Record<string, {
-        name: string;
-        version: string;
-        dist: {
-            shasum: string;
-            tarball: string;
-            fileCount?: number;
-            unpackedSize?: number;
-        };
-        dependencies?: Record<string, string>;
-        devDependencies?: Record<string, string>;
-        peerDependencies?: Record<string, string>;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        [key: string]: any;
-    }>;
+    versions: Record<string, PackageManifest>;
     time: {
         created: string;
         modified: string;

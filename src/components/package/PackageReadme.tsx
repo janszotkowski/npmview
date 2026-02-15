@@ -3,24 +3,37 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
+import { Suspense } from 'react';
+import { Await } from '@tanstack/react-router';
 
 type PackageReadmeProps = {
-    readonly readme?: string;
+    readonly readme: Promise<string | null> | string | undefined;
 };
 
-export const PackageReadme: React.FC<PackageReadmeProps> = (props): React.ReactElement | null => {
-    if (!props.readme) {
+const ReadmeContent = ({content}: { content: string | null | undefined }): React.ReactNode => {
+    if (!content) {
         return null;
     }
-
     return (
         <article className={'prose prose-neutral max-w-none dark:prose-invert'}>
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw, rehypeHighlight]}
             >
-                {props.readme}
+                {content}
             </ReactMarkdown>
         </article>
+    );
+};
+
+export const PackageReadme: React.FC<PackageReadmeProps> = (props): React.ReactElement => {
+    const readmePromise = props.readme instanceof Promise ? props.readme : Promise.resolve(props.readme || null);
+
+    return (
+        <Suspense fallback={<div className={'h-64 animate-pulse bg-neutral-100 dark:bg-neutral-800 rounded-lg'}/>}>
+            <Await promise={readmePromise}>
+                {(content) => <ReadmeContent content={content}/>}
+            </Await>
+        </Suspense>
     );
 };
