@@ -112,16 +112,22 @@ export const getSecurityAdvisories = createServerFn({method: 'GET'})
             const data: OSVResponse = await response.json();
             const vulnerabilities = data.vulns ?? [];
 
-            const advisories: SecurityAdvisory[] = vulnerabilities.map((vuln) => ({
-                id: vuln.id,
-                ghsa_id: vuln.id.startsWith('GHSA-') ? vuln.id : '',
-                summary: vuln.summary || vuln.details?.split('\n')[0] || 'No summary available',
-                severity: getSeverityFromOSV(vuln),
-                url: getAdvisoryUrl(vuln),
-                published_at: vuln.published || vuln.modified || new Date().toISOString(),
-                vulnerable_versions: getVulnerableVersions(vuln),
-                patched_versions: getPatchedVersions(vuln),
-            }));
+            const advisories: SecurityAdvisory[] = vulnerabilities
+                .map((vuln) => ({
+                    id: vuln.id,
+                    ghsa_id: vuln.id.startsWith('GHSA-') ? vuln.id : '',
+                    summary: vuln.summary || vuln.details?.split('\n')[0] || 'No summary available',
+                    severity: getSeverityFromOSV(vuln),
+                    url: getAdvisoryUrl(vuln),
+                    published_at: vuln.published || vuln.modified || new Date().toISOString(),
+                    vulnerable_versions: getVulnerableVersions(vuln),
+                    patched_versions: getPatchedVersions(vuln),
+                }))
+                .sort((a, b) => {
+                    const dateA = new Date(a.published_at).getTime();
+                    const dateB = new Date(b.published_at).getTime();
+                    return dateB - dateA;
+                });
 
             await setCache(cacheKey, advisories, 86400); // Cache for 24 hours
 
