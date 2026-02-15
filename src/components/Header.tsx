@@ -20,6 +20,7 @@ export const Header: React.FC = (): ReactElement => {
                 >
                     <Link
                         to={'/'}
+                        preload={'intent'}
                         className={'flex items-center gap-2 font-bold text-xl tracking-tight hover:opacity-80 transition-opacity shrink-0'}
                         aria-label={'npmview home'}
                     >

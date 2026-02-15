@@ -11,6 +11,7 @@ import { PackageDependencies } from '@/components/package/PackageDependencies';
 import { PackageVersions } from '@/components/package/PackageVersions';
 import { Box, FileText, History } from 'lucide-react';
 import { InstallCommand } from '@/components/package/InstallCommand.tsx';
+import { PackageSkeleton } from '@/components/package/PackageSkeleton';
 
 export const Route = createFileRoute('/package/$name')({
     loader: async ({params}) => {
@@ -56,6 +57,8 @@ export const Route = createFileRoute('/package/$name')({
         };
     },
     component: PackageDetail,
+    pendingComponent: PackageSkeleton,
+    pendingMs: 0,
 });
 
 function PackageDetail() {
