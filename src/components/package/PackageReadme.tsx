@@ -19,6 +19,16 @@ const ReadmeContent = ({content}: { content: string | null | undefined }): React
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw, rehypeHighlight]}
+                components={{
+                    img: ({node, ...props}) => (
+                        // eslint-disable-next-line jsx-a11y/alt-text
+                        <img
+                            {...props}
+                            loading={'lazy'}
+                            style={{maxWidth: '100%', height: 'auto'}}
+                        />
+                    ),
+                }}
             >
                 {content}
             </ReactMarkdown>

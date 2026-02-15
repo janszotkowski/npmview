@@ -28,7 +28,7 @@ export const StatCard: React.FC<StatCardProps> = (props): React.ReactElement => 
 
     return (
         <div className={`cursor-default bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm border border-neutral-100 dark:border-neutral-800 h-full ${props.className ?? ''}`}>
-            <h3 className={'text-sm font-semibold text-neutral-600 mb-2'}>{props.title}</h3>
+            <div className={'text-sm font-semibold text-neutral-600 dark:text-neutral-400 mb-2'}>{props.title}</div>
             <div className={'flex items-end gap-2'}>
                 <span className={'text-4xl font-bold text-neutral-900 dark:text-white'}>
                     {props.value}
@@ -40,7 +40,7 @@ export const StatCard: React.FC<StatCardProps> = (props): React.ReactElement => 
                 )}
                 {props.trend && props.trend.direction !== 'neutral' && (
                     <span
-                        className={`flex items-center text-sm font-bold mb-1.5 ml-1 ${props.trend.direction === 'up' ? 'text-emerald-500' : 'text-red-500'
+                        className={`flex items-center text-sm font-bold mb-1.5 ml-1 ${props.trend.direction === 'up' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
                         }`}
                     >
                         {props.trend.direction === 'up' ? <TrendingUp className={'size-4 mr-1'}/> :

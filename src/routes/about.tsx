@@ -16,7 +16,7 @@ export const Route = createFileRoute('/about')({
         links: [
             {
                 rel: 'canonical',
-                href: `${siteConfig.url}about/`,
+                href: `${siteConfig.url}/about`,
             },
         ],
     }),

@@ -115,7 +115,7 @@ export const PackageHeader: React.FC<PackageHeaderProps> = (props): React.ReactE
                     </a>
                     <a
                         href={`https://github.com/${props.pkg.repository?.url?.split('github.com/')[1]?.replace('.git', '')}/archive/refs/heads/main.zip`}
-                        className={'inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 transition-colors shadow-sm shadow-red-500/20'}
+                        className={'inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors shadow-sm shadow-red-500/20'}
                     >
                         Download ZIP
                     </a>

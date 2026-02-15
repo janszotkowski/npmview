@@ -73,6 +73,12 @@ export const Route = createFileRoute('/package/$name')({
                     content: pkg.description || siteConfig.description,
                 },
             ],
+            links: [
+                {
+                    rel: 'canonical',
+                    href: `${siteConfig.url}/package/${pkg.name}/`,
+                },
+            ],
         };
     },
     component: PackageDetail,
