@@ -11,6 +11,8 @@ export function getRouter() {
     const router = createRouter({
         routeTree,
         context: {queryClient},
+        scrollRestoration: true,
+        scrollRestorationBehavior: 'smooth',
         defaultPreload: 'intent',
         defaultErrorComponent: DefaultCatchBoundary,
         defaultNotFoundComponent: NotFound,
