@@ -30,6 +30,11 @@ export type PackageManifest = {
     readme?: string;
     _id?: string;
     gitHead?: string;
+    engines?: {
+        node?: string;
+        npm?: string;
+        [key: string]: string | undefined;
+    };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
 };
@@ -76,3 +81,19 @@ export type DownloadRange = {
 };
 
 export type PackageDownloadsTrend = 'up' | 'down' | 'neutral';
+
+export type BundleSize = {
+    size: number;
+    gzip: number;
+    name: string;
+    version: string;
+};
+
+export type PackageScore = {
+    final: number;
+    detail: {
+        quality: number;
+        popularity: number;
+        maintenance: number;
+    };
+};

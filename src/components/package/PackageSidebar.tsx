@@ -74,6 +74,32 @@ export const PackageSidebar: React.FC<PackageSidebarProps> = (props): React.Reac
                 </div>
             )}
 
+            {props.pkg.engines && (props.pkg.engines.node || props.pkg.engines.npm) && (
+                <div>
+                    <h3 className={'mb-3 text-xs font-bold uppercase tracking-wider text-neutral-900 dark:text-neutral-100'}>
+                        Engine Requirements
+                    </h3>
+                    <div className={'space-y-2'}>
+                        {props.pkg.engines.node && (
+                            <div className={'flex items-center justify-between text-sm'}>
+                                <span className={'text-neutral-600 dark:text-neutral-400'}>Node</span>
+                                <span className={'font-mono font-medium text-neutral-900 dark:text-neutral-100'}>
+                                    {props.pkg.engines.node}
+                                </span>
+                            </div>
+                        )}
+                        {props.pkg.engines.npm && (
+                            <div className={'flex items-center justify-between text-sm'}>
+                                <span className={'text-neutral-600 dark:text-neutral-400'}>npm</span>
+                                <span className={'font-mono font-medium text-neutral-900 dark:text-neutral-100'}>
+                                    {props.pkg.engines.npm}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
             {props.pkg.keywords && props.pkg.keywords.length > 0 && (
                 <div>
                     <h3 className={'mb-3 text-xs font-bold uppercase tracking-wider text-neutral-900 dark:text-neutral-100'}>

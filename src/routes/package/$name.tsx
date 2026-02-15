@@ -1,5 +1,5 @@
 import { createFileRoute, defer } from '@tanstack/react-router';
-import { getPackage, getPackageDownloads, getPackageManifest, getPackageReadme } from '@/server/package';
+import { getBundleSize, getPackage, getPackageDownloads, getPackageManifest, getPackageReadme, getPackageScore } from '@/server/package';
 import { getGithubStars } from '@/server/github';
 import { defaultMeta, siteConfig } from '@/utils/seo';
 import { PackageHeader } from '@/components/package/PackageHeader';
@@ -24,12 +24,16 @@ export const Route = createFileRoute('/package/$name')({
                 downloads: defer(Promise.resolve(null)),
                 stars: defer(Promise.resolve(null)),
                 fullPkg: defer(Promise.resolve(null)),
+                bundleSize: defer(Promise.resolve(null)),
+                score: defer(Promise.resolve(null)),
             };
         }
 
         const readmePromise = getPackageReadme({data: opts.params.name});
         const downloadsPromise = getPackageDownloads({data: opts.params.name});
         const fullPkgPromise = getPackage({data: opts.params.name});
+        const bundleSizePromise = getBundleSize({data: opts.params.name});
+        const scorePromise = getPackageScore({data: opts.params.name});
 
         const starsPromise = (pkg.repository?.url) ? getGithubStars(pkg.repository.url) : Promise.resolve(null);
 
@@ -39,6 +43,8 @@ export const Route = createFileRoute('/package/$name')({
             fullPkg: defer(fullPkgPromise),
             downloads: defer(downloadsPromise),
             stars: defer(starsPromise),
+            bundleSize: defer(bundleSizePromise),
+            score: defer(scorePromise),
         };
     },
     head: ({loaderData}) => {
@@ -88,7 +94,7 @@ export const Route = createFileRoute('/package/$name')({
 });
 
 function PackageDetail() {
-    const {pkg, readme, downloads, stars, fullPkg} = Route.useLoaderData();
+    const {pkg, readme, downloads, stars, fullPkg, bundleSize, score} = Route.useLoaderData();
 
     if (!pkg) {
         return (
@@ -111,6 +117,8 @@ function PackageDetail() {
                 <PackageStats
                     pkg={pkg}
                     downloads={downloads}
+                    bundleSize={bundleSize}
+                    score={score}
                 />
 
                 <div className={'mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12'}>

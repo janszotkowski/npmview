@@ -1,9 +1,11 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getCache, setCache } from './redis';
-import { DownloadRange, PackageDetails, PackageManifest } from '@/types/package.ts';
+import { BundleSize, DownloadRange, PackageDetails, PackageManifest, PackageScore } from '@/types/package.ts';
 
 const NPM_REGISTRY_URL = 'https://registry.npmjs.org';
 const NPM_DOWNLOADS_URL = 'https://api.npmjs.org/downloads/range';
+const BUNDLEPHOBIA_URL = 'https://bundlephobia.com/api/size';
+const NPMS_API_URL = 'https://api.npms.io/v2/package';
 
 export const getPackageManifest = createServerFn({method: 'GET'})
     .inputValidator((name: string) => name)
@@ -135,6 +137,84 @@ export const getPackageDownloads = createServerFn({method: 'GET'})
             return data;
         } catch (error) {
             console.error(`Downloads fetch failed for ${name}:`, error);
+            return null;
+        }
+    });
+
+export const getBundleSize = createServerFn({method: 'GET'})
+    .inputValidator((name: string) => name)
+    .handler(async (ctx) => {
+        const name = ctx.data;
+
+        if (!name) {
+            throw new Error('Package name is required');
+        }
+
+        const cacheKey = `bundle:${name}`;
+
+        const cachedResult = await getCache<BundleSize>(cacheKey);
+        if (cachedResult) {
+            return cachedResult;
+        }
+
+        try {
+            const response = await fetch(`${BUNDLEPHOBIA_URL}?package=${name}`);
+
+            if (!response.ok) {
+                console.warn(`Failed to fetch bundle size for ${name}: ${response.statusText}`);
+                return null;
+            }
+
+            const data = (await response.json()) as BundleSize;
+
+            await setCache(cacheKey, data, 86400); // Cache for 24 hours
+
+            return data;
+        } catch (error) {
+            console.error(`Bundle size fetch failed for ${name}:`, error);
+            return null;
+        }
+    });
+
+export const getPackageScore = createServerFn({method: 'GET'})
+    .inputValidator((name: string) => name)
+    .handler(async (ctx) => {
+        const name = ctx.data;
+
+        if (!name) {
+            throw new Error('Package name is required');
+        }
+
+        const cacheKey = `score:${name}`;
+
+        const cachedResult = await getCache<PackageScore>(cacheKey);
+        if (cachedResult) {
+            return cachedResult;
+        }
+
+        try {
+            const response = await fetch(`${NPMS_API_URL}/${name}`);
+
+            if (!response.ok) {
+                console.warn(`Failed to fetch package score for ${name}: ${response.statusText}`);
+                return null;
+            }
+
+            const data = await response.json();
+            const score: PackageScore = {
+                final: data.score.final,
+                detail: {
+                    quality: data.score.detail.quality,
+                    popularity: data.score.detail.popularity,
+                    maintenance: data.score.detail.maintenance,
+                },
+            };
+
+            await setCache(cacheKey, score, 86400); // Cache for 24 hours
+
+            return score;
+        } catch (error) {
+            console.error(`Package score fetch failed for ${name}:`, error);
             return null;
         }
     });
