@@ -3,6 +3,7 @@ import { Suspense, useMemo } from 'react';
 import { InstallCommand } from './InstallCommand';
 import { Await } from '@tanstack/react-router';
 import { StatCard } from '@/components/StatCard';
+import { Tooltip } from '@/components/Tooltip';
 
 type PackageStatsProps = {
     pkg: PackageDetails;
@@ -45,10 +46,21 @@ const WeeklyDownloads = ({downloads}: { downloads: DownloadRange | null }) => {
         } as const;
     }, [downloads]);
 
+    const formatDownloadCount = (count: number): string => {
+        return new Intl.NumberFormat('en-US', {
+            notation: 'compact',
+            maximumFractionDigits: 1,
+        }).format(count);
+    };
+
     return (
         <StatCard
             title={'Weekly Downloads'}
-            value={totalDownloads.toLocaleString()}
+            value={
+                <Tooltip content={totalDownloads.toLocaleString()}>
+                    {formatDownloadCount(totalDownloads)}
+                </Tooltip>
+            }
             trend={{
                 direction: trend as 'up' | 'down' | 'neutral',
                 percentage,
