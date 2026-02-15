@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
 import { PackageDependencies } from '@/components/package/PackageDependencies';
 import { PackageVersions } from '@/components/package/PackageVersions';
 import { Box, FileText, History } from 'lucide-react';
+import { InstallCommand } from '@/components/package/InstallCommand.tsx';
 
 export const Route = createFileRoute('/package/$name')({
     loader: async ({params}) => {
@@ -74,59 +75,58 @@ function PackageDetail() {
             <div className={'container mx-auto max-w-7xl px-4 py-8'}>
                 <PackageHeader pkg={pkg} stars={stars}/>
 
-                <div className={'mt-8 space-y-8'}>
-                    <PackageStats
-                        pkg={pkg}
-                        downloads={downloads}
-                    />
+                <div className={'mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12'}>
+                    <div className={'space-y-8 lg:col-span-8'}>
+                        <PackageStats
+                            pkg={pkg}
+                            downloads={downloads}
+                        />
 
-                    <div className={'grid gap-8 lg:grid-cols-12'}>
-                        <div className={'lg:col-span-8'}>
-                            <Tabs defaultValue={'readme'}>
-                                <TabsList className={'mb-4 overflow-x-auto'}>
-                                    <TabsTrigger
-                                        value={'readme'}
-                                        icon={<FileText className={'h-4 w-4'}/>}
-                                    >
-                                        Readme
-                                    </TabsTrigger>
-                                    <TabsTrigger
-                                        value={'dependencies'}
-                                        icon={<Box className={'h-4 w-4'}/>}
-                                    >
-                                        Dependencies
-                                    </TabsTrigger>
-                                    <TabsTrigger
-                                        value={'versions'}
-                                        icon={<History className={'h-4 w-4'}/>}
-                                    >
-                                        Versions
-                                    </TabsTrigger>
-                                </TabsList>
+                        <Tabs defaultValue={'readme'}>
+                            <TabsList className={'mb-4 overflow-x-auto'}>
+                                <TabsTrigger
+                                    value={'readme'}
+                                    icon={<FileText className={'h-4 w-4'}/>}
+                                >
+                                    Readme
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value={'dependencies'}
+                                    icon={<Box className={'h-4 w-4'}/>}
+                                >
+                                    Dependencies
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value={'versions'}
+                                    icon={<History className={'h-4 w-4'}/>}
+                                >
+                                    Versions
+                                </TabsTrigger>
+                            </TabsList>
 
-                                <TabsContent value={'readme'}>
-                                    <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
-                                        <PackageReadme readme={pkg.readme}/>
-                                    </div>
-                                </TabsContent>
+                            <TabsContent value={'readme'}>
+                                <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
+                                    <PackageReadme readme={pkg.readme}/>
+                                </div>
+                            </TabsContent>
 
-                                <TabsContent value={'dependencies'}>
-                                    <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
-                                        <PackageDependencies pkg={pkg}/>
-                                    </div>
-                                </TabsContent>
+                            <TabsContent value={'dependencies'}>
+                                <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
+                                    <PackageDependencies pkg={pkg}/>
+                                </div>
+                            </TabsContent>
 
-                                <TabsContent value={'versions'}>
-                                    <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
-                                        <PackageVersions pkg={pkg}/>
-                                    </div>
-                                </TabsContent>
-                            </Tabs>
-                        </div>
+                            <TabsContent value={'versions'}>
+                                <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
+                                    <PackageVersions pkg={pkg}/>
+                                </div>
+                            </TabsContent>
+                        </Tabs>
+                    </div>
 
-                        <div className={'lg:col-span-4'}>
-                            <PackageSidebar pkg={pkg}/>
-                        </div>
+                    <div className={'space-y-8 lg:col-span-4'}>
+                        <InstallCommand packageName={pkg.name}/>
+                        <PackageSidebar pkg={pkg}/>
                     </div>
                 </div>
             </div>

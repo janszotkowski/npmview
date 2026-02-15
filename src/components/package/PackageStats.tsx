@@ -1,6 +1,5 @@
 import { DownloadRange, PackageDetails, PackageDownloadsTrend } from '@/types/package';
 import { Suspense, useMemo } from 'react';
-import { InstallCommand } from './InstallCommand';
 import { Await } from '@tanstack/react-router';
 import { StatCard } from '@/components/StatCard';
 import { Tooltip } from '@/components/Tooltip';
@@ -87,7 +86,7 @@ export const PackageStats: React.FC<PackageStatsProps> = (props): React.ReactEle
     const formattedSize = formatBytes(unpackedSize).split(' ');
 
     return (
-        <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'}>
+        <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
             <Suspense
                 fallback={
                     <StatCard
@@ -111,8 +110,6 @@ export const PackageStats: React.FC<PackageStatsProps> = (props): React.ReactEle
                 title={'Total Files'}
                 value={fileCount}
             />
-
-            <InstallCommand packageName={props.pkg.name}/>
         </div>
     );
 };
