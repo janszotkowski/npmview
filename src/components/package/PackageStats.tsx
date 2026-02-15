@@ -89,10 +89,12 @@ export const PackageStats: React.FC<PackageStatsProps> = (props): React.ReactEle
     return (
         <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'}>
             <Suspense
-                fallback={<StatCard
-                    title={''}
-                    loading={true}
-                />}
+                fallback={
+                    <StatCard
+                        title={''}
+                        loading={true}
+                    />
+                }
             >
                 <Await promise={props.downloads}>
                     {(resolvedDownloads) => <WeeklyDownloads downloads={resolvedDownloads}/>}
