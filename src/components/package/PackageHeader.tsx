@@ -119,15 +119,6 @@ export const PackageHeader: React.FC<PackageHeaderProps> = (props): React.ReactE
             </div>
 
             <div className={'h-px w-full bg-neutral-200 dark:bg-neutral-800 my-8'}/>
-
-            <div className={'space-y-4'}>
-                <h2 className={'text-xl md:text-2xl font-bold text-neutral-900 dark:text-white'}>
-                    {props.pkg.name.charAt(0).toUpperCase() + props.pkg.name.slice(1)}
-                </h2>
-                <p className={'text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-4xl'}>
-                    {props.pkg.description}
-                </p>
-            </div>
         </div>
     );
 };
