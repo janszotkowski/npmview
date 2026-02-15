@@ -24,7 +24,7 @@ export const TrendingPackages: React.FC = (): React.ReactElement => {
                         preload={'intent'}
                         className={'group flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-full text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:border-red-500/30 hover:text-red-600 dark:hover:text-red-400 hover:shadow-sm transition-all duration-300'}
                     >
-                        <TrendingUp className={'w-3 h-3 text-red-500 opacity-50 group-hover:opacity-100 transition-opacity'}/>
+                        <TrendingUp className={'w-3 h-3 text-emerald-500 group-hover:opacity-100 transition-opacity'}/>
                         {pkg.label}
                     </Link>
                 ))}
