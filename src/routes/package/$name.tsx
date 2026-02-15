@@ -1,6 +1,5 @@
 import { createFileRoute, defer } from '@tanstack/react-router';
-import { getBundleSize, getPackage, getPackageDownloads, getPackageManifest, getPackageReadme, getPackageScore, getSecurityAdvisories } from '@/server/package';
-import { getGithubStars } from '@/server/github';
+import { getBundleSize, getPackage, getPackageDownloads, getPackageManifest, getPackageReadme, getPackageScore } from '@/server/package';
 import { defaultMeta, siteConfig } from '@/utils/seo';
 import { PackageHeader } from '@/components/package/PackageHeader';
 import { PackageReadme } from '@/components/package/PackageReadme';
@@ -14,6 +13,7 @@ import { InstallCommand } from '@/components/package/InstallCommand.tsx';
 import { PackageSkeleton } from '@/components/package/PackageSkeleton';
 import { SecurityAlerts } from '@/components/package/SecurityAlerts';
 import { SecurityAlertsTab } from '@/components/package/SecurityAlertsTab';
+import { getGithubStars, getSecurityAdvisories } from '@/server/github.ts';
 
 export const Route = createFileRoute('/package/$name')({
     loader: async (opts) => {
@@ -39,7 +39,7 @@ export const Route = createFileRoute('/package/$name')({
         const scorePromise = getPackageScore({data: opts.params.name});
         const advisoriesPromise = getSecurityAdvisories({data: opts.params.name});
 
-        const starsPromise = (pkg.repository?.url) ? getGithubStars(pkg.repository.url) : Promise.resolve(null);
+        const starsPromise = (pkg.repository?.url) ? getGithubStars({data: pkg.repository.url}) : Promise.resolve(null);
 
         return {
             pkg,

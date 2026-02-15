@@ -1,14 +1,12 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getCache, setCache } from './redis';
 import { BundleSize, DownloadRange, PackageDetails, PackageManifest, PackageScore } from '@/types/package.ts';
-import type { SecurityAdvisory } from '@/components/package/SecurityAlerts';
 
 const NPM_REGISTRY_URL = 'https://registry.npmjs.org';
 const NPM_DOWNLOADS_URL = 'https://api.npmjs.org/downloads/range';
 const BUNDLEPHOBIA_URL = 'https://bundlephobia.com/api/size';
 const NPMS_API_URL = 'https://api.npms.io/v2/package';
 const UNPKG_CDN_URL = 'https://unpkg.com';
-const GITHUB_ADVISORY_URL = 'https://api.github.com/advisories';
 
 export const getPackageManifest = createServerFn({method: 'GET'})
     .inputValidator((name: string) => name)
@@ -218,64 +216,6 @@ export const getPackageScore = createServerFn({method: 'GET'})
             return score;
         } catch (error) {
             console.error(`Package score fetch failed for ${name}:`, error);
-            return null;
-        }
-    });
-
-export const getSecurityAdvisories = createServerFn({method: 'GET'})
-    .inputValidator((name: string) => name)
-    .handler(async (ctx) => {
-        const name = ctx.data;
-
-        if (!name) {
-            throw new Error('Package name is required');
-        }
-
-        const cacheKey = `security:${name}`;
-
-        const cachedResult = await getCache<SecurityAdvisory[]>(cacheKey);
-        if (cachedResult) {
-            return cachedResult;
-        }
-
-        try {
-            const response = await fetch(`${GITHUB_ADVISORY_URL}?ecosystem=npm&affects=${encodeURIComponent(name)}`, {
-                headers: {
-                    'Accept': 'application/vnd.github+json',
-                    'X-GitHub-Api-Version': '2022-11-28',
-                },
-            });
-
-            if (!response.ok) {
-                console.warn(`Failed to fetch security advisories for ${name}: ${response.statusText}`);
-                return null;
-            }
-
-            const data = await response.json();
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const advisories: SecurityAdvisory[] = data.map((advisory: any) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const npmVulnerability = advisory.vulnerabilities?.find((v: any) => v.package?.ecosystem === 'npm' && v.package?.name === name);
-                const patchedVersion = npmVulnerability?.first_patched_version;
-                const patchedVersionString = typeof patchedVersion === 'string' ? patchedVersion : patchedVersion?.identifier || undefined;
-
-                return {
-                    id: advisory.id,
-                    ghsa_id: advisory.ghsa_id,
-                    summary: advisory.summary,
-                    severity: advisory.severity,
-                    url: advisory.html_url,
-                    published_at: advisory.published_at,
-                    vulnerable_versions: npmVulnerability?.vulnerable_version_range || undefined,
-                    patched_versions: patchedVersionString,
-                };
-            });
-
-            await setCache(cacheKey, advisories, 3600);
-
-            return advisories;
-        } catch (error) {
-            console.error(`Security advisories fetch failed for ${name}:`, error);
             return null;
         }
     });
