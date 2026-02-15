@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Copy, Terminal } from 'lucide-react';
+import { Check, Copy } from 'lucide-react';
 
 type InstallCommandProps = {
     packageName: string;
@@ -45,15 +45,15 @@ export const InstallCommand: React.FC<InstallCommandProps> = (props): React.Reac
     };
 
     return (
-        <div className={'w-full max-w-md overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 shadow-2xl'}>
-            <div className={'flex items-center border-b border-neutral-800 bg-neutral-900/50 px-2'}>
+        <div className={'w-full overflow-hidden rounded-xl border border-neutral-800 bg-[#0c0c0c] shadow-2xl'}>
+            <div className={'flex items-center border-b border-neutral-800 bg-[#151515] px-2'}>
                 {validManagers.map((pm) => (
                     <button
                         key={pm}
                         onClick={() => handleManagerChange(pm)}
-                        className={`cursor-pointer px-4 py-2 text-xs font-medium transition-colors ${manager === pm
-                            ? 'text-red-500 dark:text-red-400'
-                            : 'text-neutral-300 hover:text-red-300'
+                        className={`cursor-pointer border-b-2 px-4 py-2 text-xs font-medium transition-colors ${manager === pm
+                            ? 'border-red-500 text-white'
+                            : 'border-transparent text-neutral-400 hover:text-neutral-200'
                         }`}
                         type={'button'}
                     >
@@ -63,7 +63,7 @@ export const InstallCommand: React.FC<InstallCommandProps> = (props): React.Reac
             </div>
             <div className={'group relative flex items-center justify-between p-4'}>
                 <div className={'flex items-center gap-3 font-mono text-sm text-neutral-300'}>
-                    <Terminal className={'size-4 text-neutral-600'}/>
+                    <span className={'select-none text-neutral-600'}>$</span>
                     <span>{getCommand()}</span>
                 </div>
                 <button

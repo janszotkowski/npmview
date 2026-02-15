@@ -51,7 +51,7 @@ export const getPackageDownloads = createServerFn({method: 'GET'})
             throw new Error('Package name is required');
         }
 
-        const cacheKey = `downloads:month:${name}`;
+        const cacheKey = `downloads:week:${name}`;
 
         const cachedResult = await getCache<DownloadRange>(cacheKey);
         if (cachedResult) {
@@ -59,7 +59,7 @@ export const getPackageDownloads = createServerFn({method: 'GET'})
         }
 
         try {
-            const response = await fetch(`${NPM_DOWNLOADS_URL}/last-month/${name}`);
+            const response = await fetch(`${NPM_DOWNLOADS_URL}/last-week/${name}`);
 
             if (!response.ok) {
                 console.warn(`Failed to fetch downloads for ${name}: ${response.statusText}`);
