@@ -3,14 +3,16 @@ import type { ReactElement } from 'react';
 import { Github, PackageSearch } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { HeaderSearchController } from '@/components/HeaderSearchController.tsx';
+import { useScroll } from '@/hooks/useScroll';
 
 export const Header: React.FC = (): ReactElement => {
     const location = useLocation();
     const pathname = location.pathname;
     const isPackagePage = pathname.startsWith('/package/');
+    const isScrolled = useScroll();
 
     return (
-        <header className={'sticky top-0 z-50 w-full border-b border-neutral-200 bg-white/80 backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/80'}>
+        <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? 'border-b border-neutral-200 bg-white/80 backdrop-blur-md dark:border-neutral-800 dark:bg-neutral-950/80' : 'border-b border-transparent bg-transparent'}`}>
             <div className={'container mx-auto flex h-16 items-center justify-between px-4'}>
                 <div className={'flex items-center gap-8 flex-1'}>
                     <Link

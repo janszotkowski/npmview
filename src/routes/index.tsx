@@ -7,6 +7,7 @@ import { SearchResults } from '@/components/SearchResults';
 import { searchPackages } from '@/server/search';
 import { useDebounce } from '@/hooks/useDebounce';
 import { siteConfig } from '@/utils/seo.ts';
+import { TrendingPackages } from '@/components/TrendingPackages';
 
 export const Route = createFileRoute('/')({
     headers: () => ({
@@ -70,26 +71,37 @@ function Home() {
     }
 
     return (
-        <div className={'flex flex-col items-center min-h-screen px-4 sm:px-6 lg:px-8 pt-[20vh]'}>
+        <div className={'flex flex-col items-center min-h-screen relative pb-20 overflow-x-hidden'}>
+            <div className={'absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-linear-to-b from-red-100/80 to-transparent dark:from-red-900/20 dark:to-transparent pointer-events-none blur-3xl'}/>
+            <div className={'absolute top-0 right-0 w-[600px] h-[600px] bg-linear-to-bl from-blue-100/80 to-transparent dark:from-blue-900/20 dark:to-transparent pointer-events-none blur-3xl'}/>
+            <div className={'absolute top-0 left-0 w-[600px] h-[600px] bg-linear-to-br from-purple-100/80 to-transparent dark:from-purple-900/20 dark:to-transparent pointer-events-none blur-3xl'}/>
+
             <div
-                className={'w-full max-w-2xl space-y-8 text-center'}
+                className={'w-full max-w-4xl px-4 sm:px-6 lg:px-8 flex flex-col items-center pt-[15vh] space-y-8 text-center relative z-10'}
                 onKeyDown={handleKeyDown}
             >
                 <Hero/>
 
-                <SearchInput
-                    value={query}
-                    onChange={setQuery}
-                    isLoading={isLoading}
-                    activeIndex={activeIndex}
-                    onFocus={() => setActiveIndex(-1)}
-                />
+                <div className={'w-full max-w-2xl flex flex-col items-center'}>
+                    <SearchInput
+                        value={query}
+                        onChange={setQuery}
+                        isLoading={isLoading}
+                        activeIndex={activeIndex}
+                        onFocus={() => setActiveIndex(-1)}
+                    />
 
-                <SearchResults
-                    results={results}
-                    activeIndex={activeIndex}
-                    onSelect={setActiveIndex}
-                />
+                    {query && (
+                        <SearchResults
+                            results={results}
+                            activeIndex={activeIndex}
+                            onSelect={setActiveIndex}
+                            className={'w-full'}
+                        />
+                    )}
+                </div>
+
+                {!query && <TrendingPackages/>}
             </div>
         </div>
     );

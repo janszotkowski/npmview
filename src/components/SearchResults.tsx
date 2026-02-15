@@ -14,7 +14,7 @@ export const SearchResults: React.FC<SearchResultsProps> = (props): React.ReactE
     }
 
     return (
-        <div className={`w-full text-left pb-20 ${props.className || 'mt-8 max-w-2xl'}`}>
+        <div className={`w-full text-left pb-20 ${props.className || 'mt-8 max-w-2xl'} mt-10 mx-auto`}>
             <h3 className={'text-lg font-semibold text-neutral-900 dark:text-white mb-4'}>Search Results</h3>
             <ul
                 className={'space-y-4'}
