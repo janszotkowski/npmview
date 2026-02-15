@@ -59,6 +59,36 @@ function About(): ReactElement {
                 </section>
 
                 <section className={'space-y-6 rounded-2xl bg-white p-8 shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-900 dark:ring-neutral-800'}>
+                    <h2 className={'text-2xl font-bold text-neutral-900 dark:text-white'}>Privacy</h2>
+                    <p className={'text-neutral-600 dark:text-neutral-400'}>
+                        We use monitoring and analytics tools to improve the service and understand usage patterns.
+                    </p>
+                    <ul className={'space-y-3'}>
+                        {[
+                            {name: 'Sentry', desc: 'Error tracking & performance monitoring'},
+                            {name: 'PostHog', desc: 'Web Vitals & performance analytics'},
+                        ].map((tool) => (
+                            <li
+                                key={tool.name}
+                                className={'flex items-start gap-3'}
+                            >
+                                <div
+                                    className={'mt-1.5 size-1.5 rounded-full bg-neutral-400 dark:bg-neutral-600'}
+                                    aria-hidden={'true'}
+                                />
+                                <div>
+                                    <span className={'font-semibold text-neutral-900 dark:text-white'}>{tool.name}</span>
+                                    <span className={'ml-2 text-sm text-neutral-500 dark:text-neutral-400'}>- {tool.desc}</span>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                    <p className={'text-sm text-neutral-500 dark:text-neutral-400'}>
+                        These tools help us identify issues, optimize performance, and understand how the application is being used. No personally identifiable information is collected without consent.
+                    </p>
+                </section>
+
+                <section className={'space-y-6 rounded-2xl bg-white p-8 shadow-sm ring-1 ring-neutral-200 dark:bg-neutral-900 dark:ring-neutral-800'}>
                     <h2 className={'text-2xl font-bold text-neutral-900 dark:text-white'}>Tech Stack</h2>
                     <p className={'text-neutral-600 dark:text-neutral-400'}>
                         Built with the latest technologies to ensure performance, type safety, and a great developer experience.
