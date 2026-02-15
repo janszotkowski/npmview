@@ -68,7 +68,10 @@ function PackageDetail() {
                 <PackageHeader pkg={pkg}/>
 
                 <div className={'mt-8 space-y-8'}>
-                    <PackageStats pkg={pkg} downloads={downloads}/>
+                    <PackageStats
+                        pkg={pkg}
+                        downloads={downloads}
+                    />
 
                     <div className={'grid gap-8 lg:grid-cols-12'}>
                         <div className={'lg:col-span-8'}>
@@ -78,9 +81,7 @@ function PackageDetail() {
                         </div>
 
                         <div className={'lg:col-span-4'}>
-                            <div className={'sticky top-8'}>
-                                <PackageSidebar pkg={pkg}/>
-                            </div>
+                            <PackageSidebar pkg={pkg}/>
                         </div>
                     </div>
                 </div>

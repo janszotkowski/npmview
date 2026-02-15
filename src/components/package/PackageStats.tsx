@@ -1,8 +1,8 @@
 import { DownloadRange, PackageDetails } from '@/types/package';
 import { Suspense, useMemo } from 'react';
-import { TrendingDown, TrendingUp } from 'lucide-react';
 import { InstallCommand } from './InstallCommand';
 import { Await } from '@tanstack/react-router';
+import { StatCard } from '@/components/StatCard';
 
 type PackageStatsProps = {
     pkg: PackageDetails;
@@ -38,25 +38,22 @@ const WeeklyDownloads = ({downloads}: { downloads: DownloadRange | null }) => {
             trendDirection = 'down';
         }
 
-        return {totalDownloads: total, trend: trendDirection, percentage: Math.abs(percentChange)};
+        return {
+            totalDownloads: total,
+            trend: trendDirection,
+            percentage: Math.abs(percentChange),
+        } as const;
     }, [downloads]);
 
     return (
-        <div className={'bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm border border-neutral-100 dark:border-neutral-800 h-full'}>
-            <h3 className={'text-sm font-semibold text-neutral-500 mb-2'}>Weekly Downloads</h3>
-            <div className={'flex items-end gap-3'}>
-                <span className={'text-4xl font-bold text-neutral-900 dark:text-white'}>
-                    {totalDownloads.toLocaleString()}
-                </span>
-                {trend !== 'neutral' && (
-                    <span className={`flex items-center text-sm font-bold mb-1.5 ${trend === 'up' ? 'text-emerald-500' : 'text-red-500'
-                    }`}>
-                        {trend === 'up' ? <TrendingUp className={'size-4 mr-1'}/> : <TrendingDown className={'size-4 mr-1'}/>}
-                        {percentage}%
-                    </span>
-                )}
-            </div>
-        </div>
+        <StatCard
+            title={'Weekly Downloads'}
+            value={totalDownloads.toLocaleString()}
+            trend={{
+                direction: trend as 'up' | 'down' | 'neutral',
+                percentage,
+            }}
+        />
     );
 };
 
@@ -73,39 +70,31 @@ export const PackageStats: React.FC<PackageStatsProps> = (props): React.ReactEle
         return parseFloat((bytes / Math.pow(k, i)).toFixed(0)) + ' ' + sizes[i];
     };
 
+    const formattedSize = formatBytes(unpackedSize).split(' ');
+
     return (
         <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'}>
-            <Suspense fallback={
-                <div className={'bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm border border-neutral-100 dark:border-neutral-800 h-full animate-pulse'}>
-                    <div className={'h-4 w-32 bg-neutral-200 dark:bg-neutral-800 rounded mb-4'}/>
-                    <div className={'h-10 w-48 bg-neutral-200 dark:bg-neutral-800 rounded'}/>
-                </div>
-            }>
+            <Suspense
+                fallback={<StatCard
+                    title={''}
+                    loading={true}
+                />}
+            >
                 <Await promise={props.downloads}>
                     {(resolvedDownloads) => <WeeklyDownloads downloads={resolvedDownloads}/>}
                 </Await>
             </Suspense>
 
-            <div className={'bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm border border-neutral-100 dark:border-neutral-800'}>
-                <h3 className={'text-sm font-semibold text-neutral-500 mb-2'}>Unpacked Size</h3>
-                <div className={'flex items-end gap-2'}>
-                    <span className={'text-4xl font-bold text-neutral-900 dark:text-white'}>
-                        {formatBytes(unpackedSize).split(' ')[0]}
-                    </span>
-                    <span className={'text-xl font-medium text-neutral-500 mb-1.5'}>
-                        {formatBytes(unpackedSize).split(' ')[1]}
-                    </span>
-                </div>
-            </div>
+            <StatCard
+                title={'Unpacked Size'}
+                value={formattedSize[0]}
+                unit={formattedSize[1]}
+            />
 
-            <div className={'bg-white dark:bg-neutral-900 rounded-xl p-6 shadow-sm border border-neutral-100 dark:border-neutral-800'}>
-                <h3 className={'text-sm font-semibold text-neutral-500 mb-2'}>Total Files</h3>
-                <div className={'flex items-end'}>
-                    <span className={'text-4xl font-bold text-neutral-900 dark:text-white'}>
-                        {fileCount}
-                    </span>
-                </div>
-            </div>
+            <StatCard
+                title={'Total Files'}
+                value={fileCount}
+            />
 
             <InstallCommand packageName={props.pkg.name}/>
         </div>
