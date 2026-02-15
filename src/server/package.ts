@@ -6,6 +6,7 @@ const NPM_REGISTRY_URL = 'https://registry.npmjs.org';
 const NPM_DOWNLOADS_URL = 'https://api.npmjs.org/downloads/range';
 const BUNDLEPHOBIA_URL = 'https://bundlephobia.com/api/size';
 const NPMS_API_URL = 'https://api.npms.io/v2/package';
+const UNPKG_CDN_URL = 'https://unpkg.com';
 
 export const getPackageManifest = createServerFn({method: 'GET'})
     .inputValidator((name: string) => name)
@@ -55,7 +56,7 @@ export const getPackageReadme = createServerFn({method: 'GET'})
         if (cachedResult) return cachedResult;
 
         try {
-            const response = await fetch(`https://unpkg.com/${name}/README.md`);
+            const response = await fetch(`${UNPKG_CDN_URL}/${name}/README.md`);
             if (!response.ok) {
                 if (response.status === 404) return null;
                 throw new Error(`Unpkg error: ${response.statusText}`);
