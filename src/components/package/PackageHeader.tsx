@@ -1,13 +1,11 @@
-import { PackageDetails, PackageManifest } from '@/types/package';
-import { formatDistanceToNow } from 'date-fns';
-import { Clock, Star } from 'lucide-react';
+import { PackageManifest } from '@/types/package';
+import { Star } from 'lucide-react';
 import { Suspense } from 'react';
 import { Await } from '@tanstack/react-router';
 
 type PackageHeaderProps = {
     readonly pkg: PackageManifest;
     readonly stars: Promise<number | null>;
-    readonly fullPkg: Promise<PackageDetails | null>;
 };
 
 type GithubStarsProps = {
@@ -26,30 +24,6 @@ const GithubStars: React.FC<GithubStarsProps> = (props): React.ReactElement => {
                 {new Intl.NumberFormat('en-US', {notation: 'compact'}).format(props.stars)}
             </span>
         </>
-    );
-};
-
-type PublishDateProps = {
-    fullPkg: PackageDetails | null;
-    latestVersion: string;
-};
-
-const PublishDate: React.FC<PublishDateProps> = (props): React.ReactNode => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const publishDate = (props.fullPkg?.time as any)?.[props.latestVersion] || (props.fullPkg?.time as any)?.modified;
-
-    if (!publishDate) {
-        return null;
-    }
-
-    return (
-        <div className={'flex items-center gap-1.5'}>
-            <Clock
-                className={'size-4'}
-                aria-hidden={'true'}
-            />
-            <span>Updated {formatDistanceToNow(new Date(publishDate))} ago</span>
-        </div>
     );
 };
 
@@ -83,17 +57,6 @@ export const PackageHeader: React.FC<PackageHeaderProps> = (props): React.ReactE
 
                 <div className={'flex flex-col gap-4 md:flex-row md:items-center md:justify-between'}>
                     <div className={'flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-neutral-600 dark:text-neutral-400'}>
-                        <Suspense fallback={null}>
-                            <Await promise={props.fullPkg}>
-                                {(fullPkg) => (
-                                    <PublishDate
-                                        fullPkg={fullPkg}
-                                        latestVersion={latestVersion}
-                                    />
-                                )}
-                            </Await>
-                        </Suspense>
-                        <div className={'hidden h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-600 md:block'}/>
                         <a
                             href={`https://www.npmjs.com/~${props.pkg.maintainers?.[0]?.name}`}
                             target={'_blank'}

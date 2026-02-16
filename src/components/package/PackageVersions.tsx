@@ -1,20 +1,22 @@
-import { PackageDetails, PackageManifest } from '@/types/package';
+import { getPackageVersions } from '@/server/package';
+import { PackageManifest, PackageVersionsResponse } from '@/types/package';
+import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from '@/components/Skeleton';
+import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Suspense, useState } from 'react';
-import { Await } from '@tanstack/react-router';
+import { File, HardDrive } from 'lucide-react';
+import { formatBytes } from '@/utils/format';
 
 type PackageVersionsProps = {
     readonly pkg: PackageManifest;
-    readonly fullPkg: Promise<PackageDetails | null>;
 };
 
 type VersionListProps = {
-    pkg: PackageDetails;
-}
+    data: PackageVersionsResponse;
+};
 
 const VersionList: React.FC<VersionListProps> = (props): React.ReactElement => {
-    const versions = Object.keys(props.pkg.versions).reverse();
-    const time = props.pkg.time;
+    const versions = [...props.data.versions];
     const [showAllVersions, setShowAllVersions] = useState(false);
 
     const visibleVersions = showAllVersions ? versions : versions.slice(0, 10);
@@ -33,31 +35,42 @@ const VersionList: React.FC<VersionListProps> = (props): React.ReactElement => {
 
             <div className={'divide-y divide-neutral-100 dark:divide-neutral-800'}>
                 {visibleVersions.map((version) => {
-                    const date = time[version];
                     return (
                         <div
-                            key={version}
-                            className={'flex items-center justify-between py-3 hover:bg-neutral-50 dark:hover:bg-neutral-900/50 -mx-2 px-2 rounded-md transition-colors'}
+                            key={version.v}
+                            className={'flex items-center justify-between py-3 hover:bg-neutral-50 -mx-2 px-2 rounded-md transition-colors dark:hover:bg-neutral-900/50'}
                         >
                             <div className={'flex items-center gap-3'}>
                                 <span className={'font-mono font-medium text-neutral-900 dark:text-neutral-100'}>
-                                    {version}
+                                    {version.v}
                                 </span>
-                                {version === props.pkg['dist-tags'].latest && (
+                                {version.v === props.data.latest && (
                                     <span className={'rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400'}>
                                         latest
                                     </span>
                                 )}
                             </div>
-                            {date && (
+                            <div className={'flex items-center gap-4 text-sm text-neutral-500'}>
+                                {version.s > 0 && (
+                                    <span className={'hidden items-center gap-1.5 sm:flex'}>
+                                        <HardDrive className={'h-3.5 w-3.5 text-neutral-400'}/>
+                                        {formatBytes(version.s)}
+                                    </span>
+                                )}
+                                {version.f !== undefined && (
+                                    <span className={'hidden items-center gap-1.5 sm:flex'}>
+                                        <File className={'h-3.5 w-3.5 text-neutral-400'}/>
+                                        {version.f} files
+                                    </span>
+                                )}
                                 <time
-                                    dateTime={date}
-                                    title={new Date(date).toLocaleString()}
-                                    className={'text-sm text-neutral-600'}
+                                    dateTime={version.t}
+                                    title={new Date(version.t).toLocaleString()}
+                                    className={'min-w-25 text-right text-neutral-600'}
                                 >
-                                    {formatDistanceToNow(new Date(date), {addSuffix: true})}
+                                    {formatDistanceToNow(new Date(version.t), {addSuffix: true})}
                                 </time>
-                            )}
+                            </div>
                         </div>
                     );
                 })}
@@ -67,7 +80,7 @@ const VersionList: React.FC<VersionListProps> = (props): React.ReactElement => {
                 <button
                     type={'button'}
                     onClick={() => setShowAllVersions(true)}
-                    className={'w-full rounded-lg border border-neutral-200 bg-white py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-100 transition-colors cursor-pointer'}
+                    className={'w-full cursor-pointer rounded-lg border border-neutral-200 bg-white py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-100'}
                 >
                     Load all (+{remainingCount} more)
                 </button>
@@ -77,24 +90,34 @@ const VersionList: React.FC<VersionListProps> = (props): React.ReactElement => {
 };
 
 export const PackageVersions: React.FC<PackageVersionsProps> = (props): React.ReactElement => {
-    return (
-        <Suspense fallback={
+    const {data, isLoading, error} = useQuery({
+        queryKey: ['package', 'versions', props.pkg.name],
+        queryFn: () => getPackageVersions({data: props.pkg.name}),
+    });
+
+    if (isLoading) {
+        return (
             <div className={'space-y-4'}>
-                <div className={'h-8 w-32 bg-neutral-100 dark:bg-neutral-800 rounded animate-pulse'}/>
+                <Skeleton className={'h-8 w-32'}/>
                 <div className={'space-y-2'}>
-                    {[1, 2, 3].map(i => (
-                        <div
+                    {[1, 2, 3].map((i) => (
+                        <Skeleton
                             key={i}
-                            className={'h-12 bg-neutral-100 dark:bg-neutral-800 rounded animate-pulse'}
+                            className={'h-12 w-full'}
                         />
                     ))}
                 </div>
             </div>
-        }
-        >
-            <Await promise={props.fullPkg}>
-                {(fullPkg) => fullPkg ? <VersionList pkg={fullPkg}/> : <div>Failed to load versions</div>}
-            </Await>
-        </Suspense>
-    );
+        );
+    }
+
+    if (error || !data) {
+        return (
+            <div className={'py-8 text-center text-neutral-500'}>
+                Failed to load version history
+            </div>
+        );
+    }
+
+    return <VersionList data={data}/>;
 };

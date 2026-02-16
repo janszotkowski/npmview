@@ -1,5 +1,5 @@
 import { createFileRoute, defer } from '@tanstack/react-router';
-import { getBundleSize, getPackage, getPackageDownloads, getPackageManifest, getPackageReadme, getPackageScore } from '@/server/package';
+import { getBundleSize, getPackageDownloads, getPackageManifest, getPackageReadme, getPackageScore } from '@/server/package';
 import { defaultMeta, siteConfig } from '@/utils/seo';
 import { PackageHeader } from '@/components/package/PackageHeader';
 import { PackageReadme } from '@/components/package/PackageReadme';
@@ -26,7 +26,6 @@ export const Route = createFileRoute('/package/$name')({
                 readme: defer(Promise.resolve(null)),
                 downloads: defer(Promise.resolve(null)),
                 stars: defer(Promise.resolve(null)),
-                fullPkg: defer(Promise.resolve(null)),
                 bundleSize: defer(Promise.resolve(null)),
                 score: defer(Promise.resolve(null)),
                 advisories: defer(Promise.resolve(null)),
@@ -35,7 +34,6 @@ export const Route = createFileRoute('/package/$name')({
 
         const readmePromise = getPackageReadme({data: opts.params.name});
         const downloadsPromise = getPackageDownloads({data: opts.params.name});
-        const fullPkgPromise = getPackage({data: opts.params.name});
         const bundleSizePromise = getBundleSize({data: opts.params.name});
         const scorePromise = getPackageScore({data: opts.params.name});
         const advisoriesPromise = getSecurityAdvisories({data: opts.params.name});
@@ -45,7 +43,6 @@ export const Route = createFileRoute('/package/$name')({
         return {
             pkg,
             readme: defer(readmePromise),
-            fullPkg: defer(fullPkgPromise),
             downloads: defer(downloadsPromise),
             stars: defer(starsPromise),
             bundleSize: defer(bundleSizePromise),
@@ -100,7 +97,7 @@ export const Route = createFileRoute('/package/$name')({
 });
 
 function PackageDetail() {
-    const {pkg, readme, downloads, stars, fullPkg, bundleSize, score, advisories} = Route.useLoaderData();
+    const {pkg, readme, downloads, stars, bundleSize, score, advisories} = Route.useLoaderData();
 
     if (!pkg) {
         return (
@@ -116,7 +113,6 @@ function PackageDetail() {
             <div className={'container mx-auto max-w-7xl px-4 py-8'}>
                 <PackageHeader
                     pkg={pkg}
-                    fullPkg={fullPkg}
                     stars={stars}
                 />
 
@@ -171,7 +167,6 @@ function PackageDetail() {
                                 <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
                                     <PackageVersions
                                         pkg={pkg}
-                                        fullPkg={fullPkg}
                                     />
                                 </div>
                             </TabsContent>

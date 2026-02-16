@@ -1,22 +1,13 @@
 import { BundleSize, DownloadRange, PackageDownloadsTrend, PackageManifest, PackageScore } from '@/types/package';
 import { Suspense, useMemo } from 'react';
 import { Await } from '@tanstack/react-router';
+import { formatBytes } from '@/utils/format';
 
 type PackageStatsProps = {
     readonly pkg: PackageManifest;
     downloads: Promise<DownloadRange | null>;
     bundleSize: Promise<BundleSize | null>;
     score: Promise<PackageScore | null>;
-};
-
-const formatBytes = (bytes: number): string => {
-    if (bytes === 0) {
-        return '0 B';
-    }
-    const k = 1000;
-    const sizes = ['B', 'kB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(0)) + ' ' + sizes[i];
 };
 
 export const PackageStats: React.FC<PackageStatsProps> = (props): React.ReactElement => {

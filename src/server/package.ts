@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
-import { getCache, setCache } from './redis';
-import { BundleSize, DownloadRange, PackageDetails, PackageManifest, PackageScore } from '@/types/package.ts';
+import { decode, encode } from '@msgpack/msgpack';
+import redis, { getCache, setCache } from './redis';
+import { BundleSize, DownloadRange, MinimalVersion, PackageManifest, PackageScore, PackageVersionsResponse } from '@/types/package.ts';
 
 const NPM_REGISTRY_URL = 'https://registry.npmjs.org';
 const NPM_DOWNLOADS_URL = 'https://api.npmjs.org/downloads/range';
@@ -8,18 +9,38 @@ const BUNDLEPHOBIA_URL = 'https://bundlephobia.com/api/size';
 const NPMS_API_URL = 'https://api.npms.io/v2/package';
 const UNPKG_CDN_URL = 'https://unpkg.com';
 
+const getBinaryCache = async <T>(key: string): Promise<T | null> => {
+    try {
+        const buffer = await redis.getBuffer(key);
+        if (!buffer) return null;
+        return decode(buffer) as T;
+    } catch (error) {
+        console.error(`Cache read failed for ${key}:`, error);
+        return null;
+    }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const setBinaryCache = async (key: string, data: any, ttl: number): Promise<void> => {
+    try {
+        const encoded = encode(data);
+        await redis.set(key, Buffer.from(encoded), 'EX', ttl);
+    } catch (error) {
+        console.error(`Cache write failed for ${key}:`, error);
+    }
+};
+
 export const getPackageManifest = createServerFn({method: 'GET'})
     .inputValidator((name: string) => name)
     .handler(async (ctx) => {
         const name = ctx.data;
-
         if (!name) {
             throw new Error('Package name is required');
         }
 
         const cacheKey = `package:manifest:${name}`;
 
-        const cachedResult = await getCache<PackageManifest>(cacheKey);
+        const cachedResult = await getBinaryCache<PackageManifest>(cacheKey);
         if (cachedResult) {
             return cachedResult;
         }
@@ -35,12 +56,10 @@ export const getPackageManifest = createServerFn({method: 'GET'})
             }
 
             const data = (await response.json()) as PackageManifest;
-
-            await setCache(cacheKey, data, 3600);
-
+            await setBinaryCache(cacheKey, data, 3600);
             return data;
         } catch (error) {
-            console.error(`Package manifest fetch failed for ${name}:`, error);
+            console.error(`Manifest fetch failed for ${name}:`, error);
             throw error;
         }
     });
@@ -49,20 +68,27 @@ export const getPackageReadme = createServerFn({method: 'GET'})
     .inputValidator((name: string) => name)
     .handler(async (ctx) => {
         const name = ctx.data;
-        if (!name) throw new Error('Package name is required');
+        if (!name) {
+            throw new Error('Package name is required');
+        }
 
         const cacheKey = `package:readme:${name}`;
-        const cachedResult = await getCache<string>(cacheKey);
-        if (cachedResult) return cachedResult;
+
+        const cachedResult = await getBinaryCache<string>(cacheKey);
+        if (cachedResult) {
+            return cachedResult;
+        }
 
         try {
             const response = await fetch(`${UNPKG_CDN_URL}/${name}/README.md`);
             if (!response.ok) {
-                if (response.status === 404) return null;
+                if (response.status === 404) {
+                    return null;
+                }
                 throw new Error(`Unpkg error: ${response.statusText}`);
             }
             const data = await response.text();
-            await setCache(cacheKey, data, 3600);
+            await setBinaryCache(cacheKey, data, 3600);
             return data;
         } catch (error) {
             console.error(`Readme fetch failed for ${name}:`, error);
@@ -70,18 +96,17 @@ export const getPackageReadme = createServerFn({method: 'GET'})
         }
     });
 
-export const getPackage = createServerFn({method: 'GET'})
+export const getPackageVersions = createServerFn({method: 'GET'})
     .inputValidator((name: string) => name)
     .handler(async (ctx) => {
         const name = ctx.data;
-
         if (!name) {
             throw new Error('Package name is required');
         }
 
-        const cacheKey = `package:${name}`;
+        const cacheKey = `package:versions:${name}`;
 
-        const cachedResult = await getCache<PackageDetails>(cacheKey);
+        const cachedResult = await getBinaryCache<PackageVersionsResponse>(cacheKey);
         if (cachedResult) {
             return cachedResult;
         }
@@ -96,13 +121,38 @@ export const getPackage = createServerFn({method: 'GET'})
                 throw new Error(`NPM Registry error: ${response.statusText}`);
             }
 
-            const data = (await response.json()) as PackageDetails;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const rawData = await response.json() as any;
+            const timeMap = rawData.time || {};
+            const distTags = rawData['dist-tags'] || {};
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const versionsList: MinimalVersion[] = Object.values(rawData.versions).map((ver: any) => {
+                const versionString = ver.version;
+                return {
+                    v: versionString,
+                    t: timeMap[versionString] || '',
+                    s: ver.dist?.unpackedSize || 0,
+                    f: ver.dist?.fileCount,
+                };
+            });
 
-            await setCache(cacheKey, data, 3600);
+            versionsList.sort((a, b) => {
+                const dateA = new Date(a.t).getTime() || 0;
+                const dateB = new Date(b.t).getTime() || 0;
+                return dateB - dateA;
+            });
 
-            return data;
+            const cleanData: PackageVersionsResponse = {
+                name: rawData.name,
+                latest: distTags.latest,
+                total: versionsList.length,
+                versions: versionsList,
+            };
+
+            await setBinaryCache(cacheKey, cleanData, 3600);
+            return cleanData;
         } catch (error) {
-            console.error(`Package fetch failed for ${name}:`, error);
+            console.error(`Versions fetch failed for ${name}:`, error);
             throw error;
         }
     });

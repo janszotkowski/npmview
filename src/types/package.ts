@@ -97,3 +97,17 @@ export type PackageScore = {
         maintenance: number;
     };
 };
+
+export type MinimalVersion = {
+    v: string;
+    t: string;
+    s: number;
+    f?: number;
+};
+
+export type PackageVersionsResponse = {
+    name: string;
+    latest: string;
+    total: number;
+    versions: MinimalVersion[];
+};
