@@ -39,13 +39,13 @@ const PROMOTIONS: Promotion[] = [
         gradient: 'from-cyan-500/20 to-blue-500/20',
     },
     {
-        id: 'vite-conf',
-        title: 'Vite Conf 24',
-        description: 'Watch the recordings from the biggest Vite conference of the year.',
+        id: 'react-summit',
+        title: 'React Summit 26',
+        description: 'Watch the recordings from the biggest React conference of the year.',
         icon: <Star className={'w-6 h-6 text-purple-500'}/>,
         type: 'external',
-        href: 'https://viteconf.org',
-        cta: 'Watch Now',
+        href: 'https://reactsummit.com/',
+        cta: 'Join Now',
         gradient: 'from-purple-500/20 to-pink-500/20',
     },
 ];
