@@ -30,8 +30,8 @@ const PROMOTIONS: Promotion[] = [
     },
     {
         id: 'react-19',
-        title: 'React 19 Beta',
-        description: 'Explore the latest features in the upcoming React 19 release.',
+        title: 'React 19',
+        description: 'Explore the latest features in the React 19 release.',
         icon: <Box className={'w-6 h-6 text-cyan-500'}/>,
         type: 'package',
         href: '/package/react',
