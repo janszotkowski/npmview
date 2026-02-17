@@ -151,6 +151,8 @@ export const Search: React.FC<SearchProps> = (props): React.ReactElement => {
                     activeIndex={activeIndex}
                     onSelect={handleSelect}
                     className={variant === 'header' ? 'mt-0 shadow-lg border border-neutral-200 dark:border-neutral-800' : 'mt-4'}
+                    query={debouncedQuery}
+                    isLoading={isLoading}
                 />
             </div>
         </div>
