@@ -1,5 +1,5 @@
 import { createServerFn } from '@tanstack/react-start';
-import { getCache, setCache } from './redis';
+import { getBinaryCache, setBinaryCache } from './redis';
 import { SearchResponse } from '../types/search';
 
 const NPM_SEARCH_URL = 'https://registry.npmjs.org/-/v1/search';
@@ -15,7 +15,7 @@ export const searchPackages = createServerFn({method: 'GET'})
 
         const cacheKey = `search:${query.toLowerCase()}`;
 
-        const cachedResult = await getCache<SearchResponse>(cacheKey);
+        const cachedResult = await getBinaryCache<SearchResponse>(cacheKey);
         if (cachedResult) {
             console.log(`[CACHE HIT] Search: ${query}`);
             return cachedResult;
@@ -31,7 +31,7 @@ export const searchPackages = createServerFn({method: 'GET'})
 
             const data = (await response.json()) as SearchResponse;
 
-            await setCache(cacheKey, data, 3600);
+            await setBinaryCache(cacheKey, data, 3600);
 
             return data;
         } catch (error) {

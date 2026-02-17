@@ -1,4 +1,5 @@
 import Redis from 'ioredis';
+import { decode, encode } from '@msgpack/msgpack';
 
 const REDIS_URL = process.env['REDIS_URL'] || 'redis://localhost:6380';
 
@@ -17,23 +18,24 @@ redis.on('connect', () => {
     console.log('Successfully connected to Redis');
 });
 
-export const getCache = async <T>(key: string): Promise<T | null> => {
+export const getBinaryCache = async <T>(key: string): Promise<T | null> => {
     try {
-        const data = await redis.get(key);
-        if (!data) return null;
-        return JSON.parse(data) as T;
+        const buffer = await redis.getBuffer(key);
+        if (!buffer) return null;
+        return decode(buffer) as T;
     } catch (error) {
-        console.error(`Cache get error for key ${key}:`, error);
+        console.error(`Cache read failed for ${key}:`, error);
         return null;
     }
 };
 
-export const setCache = async <T>(key: string, data: T, ttlSeconds: number = 3600): Promise<void> => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const setBinaryCache = async (key: string, data: any, ttl: number = 3600): Promise<void> => {
     try {
-        const serialized = JSON.stringify(data);
-        await redis.set(key, serialized, 'EX', ttlSeconds);
+        const encoded = encode(data);
+        await redis.set(key, Buffer.from(encoded), 'EX', ttl);
     } catch (error) {
-        console.error(`Cache set error for key ${key}:`, error);
+        console.error(`Cache write failed for ${key}:`, error);
     }
 };
 

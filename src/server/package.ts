@@ -1,6 +1,5 @@
 import { createServerFn } from '@tanstack/react-start';
-import { decode, encode } from '@msgpack/msgpack';
-import redis, { getCache, setCache } from './redis';
+import { getBinaryCache, setBinaryCache } from './redis';
 import { BundleSize, DownloadRange, MinimalVersion, PackageManifest, PackageScore, PackageVersionsResponse } from '@/types/package.ts';
 
 const NPM_REGISTRY_URL = 'https://registry.npmjs.org';
@@ -8,27 +7,6 @@ const NPM_DOWNLOADS_URL = 'https://api.npmjs.org/downloads/range';
 const BUNDLEPHOBIA_URL = 'https://bundlephobia.com/api/size';
 const NPMS_API_URL = 'https://api.npms.io/v2/package';
 const UNPKG_CDN_URL = 'https://unpkg.com';
-
-const getBinaryCache = async <T>(key: string): Promise<T | null> => {
-    try {
-        const buffer = await redis.getBuffer(key);
-        if (!buffer) return null;
-        return decode(buffer) as T;
-    } catch (error) {
-        console.error(`Cache read failed for ${key}:`, error);
-        return null;
-    }
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const setBinaryCache = async (key: string, data: any, ttl: number): Promise<void> => {
-    try {
-        const encoded = encode(data);
-        await redis.set(key, Buffer.from(encoded), 'EX', ttl);
-    } catch (error) {
-        console.error(`Cache write failed for ${key}:`, error);
-    }
-};
 
 export const getPackageManifest = createServerFn({method: 'GET'})
     .inputValidator((name: string) => name)
@@ -168,7 +146,7 @@ export const getPackageDownloads = createServerFn({method: 'GET'})
 
         const cacheKey = `downloads:week:${name}`;
 
-        const cachedResult = await getCache<DownloadRange>(cacheKey);
+        const cachedResult = await getBinaryCache<DownloadRange>(cacheKey);
         if (cachedResult) {
             return cachedResult;
         }
@@ -183,7 +161,7 @@ export const getPackageDownloads = createServerFn({method: 'GET'})
 
             const data = (await response.json()) as DownloadRange;
 
-            await setCache(cacheKey, data, 3600);
+            await setBinaryCache(cacheKey, data, 3600);
 
             return data;
         } catch (error) {
@@ -203,7 +181,7 @@ export const getBundleSize = createServerFn({method: 'GET'})
 
         const cacheKey = `bundle:${name}`;
 
-        const cachedResult = await getCache<BundleSize>(cacheKey);
+        const cachedResult = await getBinaryCache<BundleSize>(cacheKey);
         if (cachedResult) {
             return cachedResult;
         }
@@ -218,7 +196,7 @@ export const getBundleSize = createServerFn({method: 'GET'})
 
             const data = (await response.json()) as BundleSize;
 
-            await setCache(cacheKey, data, 86400); // Cache for 24 hours
+            await setBinaryCache(cacheKey, data, 86400); // Cache for 24 hours
 
             return data;
         } catch (error) {
@@ -238,7 +216,7 @@ export const getPackageScore = createServerFn({method: 'GET'})
 
         const cacheKey = `score:${name}`;
 
-        const cachedResult = await getCache<PackageScore>(cacheKey);
+        const cachedResult = await getBinaryCache<PackageScore>(cacheKey);
         if (cachedResult) {
             return cachedResult;
         }
@@ -261,7 +239,7 @@ export const getPackageScore = createServerFn({method: 'GET'})
                 },
             };
 
-            await setCache(cacheKey, score, 86400); // Cache for 24 hours
+            await setBinaryCache(cacheKey, score, 86400); // Cache for 24 hours
 
             return score;
         } catch (error) {

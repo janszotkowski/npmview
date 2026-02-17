@@ -1,5 +1,5 @@
 import { createServerFn } from '@tanstack/react-start';
-import { getCache, setCache } from './redis';
+import { getBinaryCache, setBinaryCache } from './redis';
 
 const GITHUB_API_URL = 'https://api.github.com';
 
@@ -23,7 +23,7 @@ export const getGithubStars = createServerFn({method: 'GET'})
 
             const cacheKey = `github:stars:${owner}/${repo}`;
 
-            const cachedResult = await getCache<number>(cacheKey);
+            const cachedResult = await getBinaryCache<number>(cacheKey);
             if (cachedResult !== null) {
                 return cachedResult;
             }
@@ -45,7 +45,7 @@ export const getGithubStars = createServerFn({method: 'GET'})
             const data = (await response.json()) as GitHubRepoData;
             const stars = data.stargazers_count;
 
-            await setCache(cacheKey, stars, 86400); // Cache for 24 hours
+            await setBinaryCache(cacheKey, stars, 86400); // Cache for 24 hours
 
             return stars;
         } catch (error) {

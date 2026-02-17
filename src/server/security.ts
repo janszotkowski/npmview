@@ -1,5 +1,5 @@
 import { createServerFn } from '@tanstack/react-start';
-import { getCache, setCache } from './redis';
+import { getBinaryCache, setBinaryCache } from './redis';
 import type { OSVResponse, OSVVulnerability, SecurityAdvisory } from '@/types/security';
 
 const OSV_API_URL = 'https://api.osv.dev/v1/query';
@@ -85,7 +85,7 @@ export const getSecurityAdvisories = createServerFn({method: 'GET'})
 
         const cacheKey = `osv:security:${name}`;
 
-        const cachedResult = await getCache<SecurityAdvisory[]>(cacheKey);
+        const cachedResult = await getBinaryCache<SecurityAdvisory[]>(cacheKey);
         if (cachedResult) {
             return cachedResult;
         }
@@ -129,7 +129,7 @@ export const getSecurityAdvisories = createServerFn({method: 'GET'})
                     return dateB - dateA;
                 });
 
-            await setCache(cacheKey, advisories, 86400); // Cache for 24 hours
+            await setBinaryCache(cacheKey, advisories, 86400); // Cache for 24 hours
 
             return advisories;
         } catch (error) {
