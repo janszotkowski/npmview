@@ -19,14 +19,13 @@ import { getSecurityAdvisories } from '@/server/security.ts';
 export const Route = createFileRoute('/package/$name')({
     loader: async (opts) => {
         const {name} = opts.params;
+
         const readmePromise = getPackageReadme({data: name});
         const downloadsPromise = getPackageDownloads({data: name});
         const bundleSizePromise = getBundleSize({data: name});
         const scorePromise = getPackageScore({data: name});
         const advisoriesPromise = getSecurityAdvisories({data: name});
-        const manifestPromise = getPackageManifest({data: name});
-
-        const pkg = await manifestPromise;
+        const pkg = await getPackageManifest({data: name});
 
         if (!pkg) {
             return {
