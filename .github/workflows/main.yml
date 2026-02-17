@@ -9,6 +9,7 @@ on:
 jobs:
   quality-gate:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v6
@@ -28,7 +29,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Lint
+        timeout-minutes: 5
         run: pnpm lint
 
       - name: Build
+        timeout-minutes: 10
         run: pnpm build
