@@ -27,6 +27,9 @@ export default defineConfig({
             },
         },
     },
+    preview: {
+        allowedHosts: true
+    },
     server: {
         port: 3000,
     },
