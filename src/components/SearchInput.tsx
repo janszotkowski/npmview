@@ -1,32 +1,21 @@
 import * as React from 'react';
-import { ChangeEvent, useEffect, useRef } from 'react';
+import { ChangeEvent, forwardRef } from 'react';
 import { Loader2, Search } from 'lucide-react';
 
 type SearchInputProps = {
     value: string;
     onChange: (value: string) => void;
     isLoading?: boolean;
-    activeIndex: number;
     onFocus: () => void;
     className?: string;
     variant?: 'default' | 'header';
+    'aria-expanded'?: boolean;
+    'aria-controls'?: string;
+    'aria-activedescendant'?: string;
 };
 
-export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps): React.ReactElement => {
-    const inputRef = useRef<HTMLInputElement>(null);
+export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>((props, ref): React.ReactElement => {
     const {variant = 'default'} = props;
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault();
-                inputRef.current?.focus();
-            }
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, []);
 
     const onChange = (e: ChangeEvent<HTMLInputElement>): void => {
         props.onChange(e.target.value);
@@ -43,7 +32,7 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
                 />
             </div>
             <input
-                ref={inputRef}
+                ref={ref}
                 type={'text'}
                 value={props.value}
                 onChange={onChange}
@@ -57,10 +46,10 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
                 autoComplete={'off'}
                 autoCorrect={'off'}
                 spellCheck={'false'}
-                aria-activedescendant={props.activeIndex >= 0 ? `search-result-${props.activeIndex}` : undefined}
+                aria-activedescendant={props['aria-activedescendant']}
                 aria-autocomplete={'list'}
-                aria-controls={'search-results-list'}
-                aria-expanded={props.value.length > 1}
+                aria-controls={props['aria-controls']}
+                aria-expanded={props['aria-expanded']}
                 role={'combobox'}
             />
             <div className={`absolute inset-y-0 right-0 flex items-center ${isHeader ? 'pr-3' : 'pr-2'}`}>
@@ -93,4 +82,6 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
             </div>
         </div>
     );
-};
+});
+
+SearchInput.displayName = 'SearchInput';

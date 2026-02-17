@@ -2,13 +2,12 @@ import { Link, useLocation } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
 import { Github, PackageSearch } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { HeaderSearchController } from '@/components/HeaderSearchController.tsx';
+import { Search } from '@/components/Search';
 import { useScroll } from '@/hooks/useScroll';
 
 export const Header: React.FC = (): ReactElement => {
     const location = useLocation();
     const pathname = location.pathname;
-    const isPackagePage = pathname.startsWith('/package/');
     const isScrolled = useScroll();
 
     return (
@@ -32,10 +31,12 @@ export const Header: React.FC = (): ReactElement => {
                         </div>
                         <span className={'hidden sm:inline'}>npmview</span>
                     </Link>
-                    <HeaderSearchController
-                        key={pathname}
-                        isPackagePage={isPackagePage}
-                    />
+                    {pathname !== '/' && (
+                        <Search
+                            variant={'header'}
+                            className={'hidden sm:block'}
+                        />
+                    )}
                 </nav>
 
                 <div className={'flex items-center gap-4 shrink-0 ml-4'}>
