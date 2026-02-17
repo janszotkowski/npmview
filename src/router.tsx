@@ -30,4 +30,9 @@ declare module '@tanstack/react-router' {
     interface Register {
         router: ReturnType<typeof getRouter>;
     }
+
+    // eslint-disable-next-line interface-to-type/prefer-type-over-interface
+    interface HistoryState {
+        package?: import('@/types/search').SearchResultItem;
+    }
 }

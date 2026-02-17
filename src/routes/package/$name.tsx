@@ -1,4 +1,4 @@
-import { createFileRoute, defer } from '@tanstack/react-router';
+import { Await, createFileRoute, defer } from '@tanstack/react-router';
 import { getBundleSize, getPackageDownloads, getPackageManifest, getPackageReadme, getPackageScore } from '@/server/package';
 import { defaultMeta, siteConfig } from '@/utils/seo';
 import { PackageHeader } from '@/components/package/PackageHeader';
@@ -15,34 +15,43 @@ import { SecurityAlerts } from '@/components/package/SecurityAlerts';
 import { SecurityAlertsTab } from '@/components/package/SecurityAlertsTab';
 import { getGithubStars } from '@/server/github.ts';
 import { getSecurityAdvisories } from '@/server/security.ts';
+import { Suspense } from 'react';
+import { PackageManifest } from '@/types/package.ts';
+import { SearchResultItem } from '@/types/search.ts';
 
 export const Route = createFileRoute('/package/$name')({
     loader: async (opts) => {
         const {name} = opts.params;
+        const statePkg = opts.location.state.package;
 
         const readmePromise = getPackageReadme({data: name});
         const downloadsPromise = getPackageDownloads({data: name});
         const bundleSizePromise = getBundleSize({data: name});
         const scorePromise = getPackageScore({data: name});
         const advisoriesPromise = getSecurityAdvisories({data: name});
-        const pkg = await getPackageManifest({data: name});
 
-        if (!pkg) {
-            return {
-                pkg: null,
-                readme: defer(Promise.resolve(null)),
-                downloads: defer(Promise.resolve(null)),
-                stars: defer(Promise.resolve(null)),
-                bundleSize: defer(Promise.resolve(null)),
-                score: defer(Promise.resolve(null)),
-                advisories: defer(Promise.resolve(null)),
-            };
+        // If we have state from search, we use it for fast render and defer the full fetch
+        let fastPkg: Partial<PackageManifest> | undefined;
+        let pkgResult: Promise<PackageManifest | null> | PackageManifest | null;
+        let starsPromise: Promise<number | null>;
+
+        if (statePkg) {
+            fastPkg = mapSearchResultToManifest(statePkg);
+            // Defer the full fetch to avoid blocking
+            pkgResult = defer(getPackageManifest({data: name}));
+            // Stars depend on repo url which we might have in fastPkg or not full (mapped from links)
+            const repoUrl = fastPkg.repository?.url;
+            starsPromise = repoUrl ? getGithubStars({data: repoUrl}) : Promise.resolve(null);
+        } else {
+            // Direct load: await data for SEO
+            const fetchedPkg = await getPackageManifest({data: name});
+            pkgResult = fetchedPkg;
+            starsPromise = (fetchedPkg?.repository?.url) ? getGithubStars({data: fetchedPkg.repository.url}) : Promise.resolve(null);
         }
 
-        const starsPromise = (pkg.repository?.url) ? getGithubStars({data: pkg.repository.url}) : Promise.resolve(null);
-
         return {
-            pkg,
+            pkg: pkgResult,
+            fastPkg,
             readme: defer(readmePromise),
             downloads: defer(downloadsPromise),
             stars: defer(starsPromise),
@@ -52,8 +61,16 @@ export const Route = createFileRoute('/package/$name')({
         };
     },
     head: ({loaderData}) => {
-        const pkg = loaderData?.pkg;
-        if (!pkg) {
+        // Try to use full pkg if available (direct load), otherwise fallback to fastPkg (search nav)
+        // Accessing loaderData.pkg directly is safe if it's data. If it's a promise, it won't have .name property.
+        // We use type narrowing or optional chaining with fallback.
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const pkgData = (loaderData?.pkg && 'name' in (loaderData.pkg as any))
+            ? (loaderData.pkg as PackageManifest)
+            : loaderData?.fastPkg;
+
+        if (!pkgData && !loaderData?.fastPkg && !loaderData?.pkg) {
             return {
                 title: `Package Not Found | ${siteConfig.title}`,
                 meta: [
@@ -66,27 +83,33 @@ export const Route = createFileRoute('/package/$name')({
             };
         }
 
+        // If we have at least a name (from fastPkg or pkg), render meta
+        const name = pkgData?.name || loaderData?.pkg && 'name' in (loaderData.pkg as any) ? (loaderData.pkg as PackageManifest).name : '';
+        const description = pkgData?.description || '';
+
+        if (!name) return {}; // partial load
+
         return {
-            title: `Package: ${pkg.name} | ${siteConfig.title}`,
+            title: `Package: ${name} | ${siteConfig.title}`,
             meta: [
                 ...defaultMeta,
                 {
                     name: 'description',
-                    content: pkg.description || siteConfig.description,
+                    content: description || siteConfig.description,
                 },
                 {
                     property: 'og:title',
-                    content: `Package: ${pkg.name} | ${siteConfig.title}`,
+                    content: `Package: ${name} | ${siteConfig.title}`,
                 },
                 {
                     property: 'og:description',
-                    content: pkg.description || siteConfig.description,
+                    content: description || siteConfig.description,
                 },
             ],
             links: [
                 {
                     rel: 'canonical',
-                    href: `${siteConfig.url}/package/${pkg.name}/`,
+                    href: `${siteConfig.url}/package/${name}/`,
                 },
             ],
         };
@@ -97,8 +120,51 @@ export const Route = createFileRoute('/package/$name')({
     staleTime: 60_000,
 });
 
+function mapSearchResultToManifest(item: SearchResultItem): Partial<PackageManifest> {
+    return {
+        name: item.name,
+        version: item.version,
+        description: item.description,
+        keywords: item.keywords,
+        maintainers: [
+            {
+                name: item.publisher.username,
+                email: item.publisher.email,
+            },
+        ],
+        repository: item.links.repository ? {type: 'git', url: item.links.repository} : undefined,
+        homepage: item.links.homepage,
+        license: undefined, // Not available in search result usually
+    };
+}
+
 function PackageDetail() {
-    const {pkg, readme, downloads, stars, bundleSize, score, advisories} = Route.useLoaderData();
+    const {pkg, fastPkg, stars} = Route.useLoaderData();
+
+    // handling if pkg is a promise (deferred) or data
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const isDeferred = pkg && typeof pkg === 'object' && 'then' in pkg;
+
+    if (isDeferred) {
+        return (
+            <Suspense fallback={<PackageSkeleton fastPkg={fastPkg}/>}>
+                <Await promise={pkg as Promise<PackageManifest | null>}>
+                    {(resolvedPkg) => <PackageContent pkg={resolvedPkg} stars={stars}/>}
+                </Await>
+            </Suspense>
+        );
+    }
+
+    return <PackageContent pkg={pkg as PackageManifest | null} stars={stars}/>;
+}
+
+type PackageContentProps = {
+    pkg: PackageManifest | null;
+    stars: Promise<number | null>; // stars is always deferred in loader
+};
+
+function PackageContent({pkg, stars}: PackageContentProps) {
+    const {readme, downloads, bundleSize, score, advisories} = Route.useLoaderData();
 
     if (!pkg) {
         return (

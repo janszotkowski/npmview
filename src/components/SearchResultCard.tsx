@@ -37,6 +37,7 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = (props): React.
                     'hover:border-red-500 dark:hover:border-red-500',
                     props.isActive ? 'ring-2 ring-red-500 border-red-500 z-10' : '',
                 )}
+                state={{package: props.pkg}}
                 preload={'viewport'}
             >
                 <div className={'flex justify-between items-start'}>

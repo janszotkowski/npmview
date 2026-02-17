@@ -59,7 +59,11 @@ function Home() {
         } else if (e.key === 'Enter') {
             e.preventDefault();
             if (activeIndex >= 0 && activeIndex < results.length) {
-                navigate({to: '/package/$name', params: {name: results[activeIndex].name}});
+                navigate({
+                    to: '/package/$name',
+                    params: {name: results[activeIndex].name},
+                    state: {package: results[activeIndex]},
+                });
             } else if (query.trim()) {
                 navigate({to: '/package/$name', params: {name: query.trim()}});
             }

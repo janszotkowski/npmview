@@ -1,22 +1,35 @@
 import { Skeleton } from '@/components/Skeleton';
+import { PackageManifest } from '@/types/package';
+import { PackageHeader } from './PackageHeader';
 
-export const PackageSkeleton: React.FC = (): React.ReactElement => {
+type PackageSkeletonProps = {
+    fastPkg?: Partial<PackageManifest>;
+};
+
+export const PackageSkeleton: React.FC<PackageSkeletonProps> = ({fastPkg}): React.ReactElement => {
     return (
         <div className={'min-h-screen bg-neutral-50 pb-20 dark:bg-black'}>
             <div className={'container mx-auto max-w-7xl px-4 py-8'}>
-                <div className={'mb-8'}>
-                    <div className={'flex items-start justify-between'}>
-                        <div className={'space-y-4'}>
-                            <Skeleton className={'h-10 w-64'}/>
-                            <Skeleton className={'h-6 w-96'}/>
-                            <div className={'flex gap-2'}>
-                                <Skeleton className={'h-6 w-20 rounded-full'}/>
-                                <Skeleton className={'h-6 w-20 rounded-full'}/>
+                {fastPkg ? (
+                    <PackageHeader
+                        pkg={fastPkg as PackageManifest}
+                        stars={Promise.resolve(null)}
+                    />
+                ) : (
+                    <div className={'mb-8'}>
+                        <div className={'flex items-start justify-between'}>
+                            <div className={'space-y-4'}>
+                                <Skeleton className={'h-10 w-64'}/>
+                                <Skeleton className={'h-6 w-96'}/>
+                                <div className={'flex gap-2'}>
+                                    <Skeleton className={'h-6 w-20 rounded-full'}/>
+                                    <Skeleton className={'h-6 w-20 rounded-full'}/>
+                                </div>
                             </div>
+                            <Skeleton className={'h-10 w-32'}/>
                         </div>
-                        <Skeleton className={'h-10 w-32'}/>
                     </div>
-                </div>
+                )}
 
                 <div className={'mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12'}>
                     <div className={'space-y-8 lg:col-span-8'}>
