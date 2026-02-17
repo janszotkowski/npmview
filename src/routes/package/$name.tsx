@@ -84,7 +84,8 @@ export const Route = createFileRoute('/package/$name')({
         }
 
         // If we have at least a name (from fastPkg or pkg), render meta
-        const name = pkgData?.name || loaderData?.pkg && 'name' in (loaderData.pkg as any) ? (loaderData.pkg as PackageManifest).name : '';
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const name = pkgData?.name || loaderData?.pkg && 'name' in (loaderData.pkg as any) ? (loaderData?.pkg as PackageManifest).name : '';
         const description = pkgData?.description || '';
 
         if (!name) return {}; // partial load
@@ -142,20 +143,28 @@ function PackageDetail() {
     const {pkg, fastPkg, stars} = Route.useLoaderData();
 
     // handling if pkg is a promise (deferred) or data
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const isDeferred = pkg && typeof pkg === 'object' && 'then' in pkg;
 
     if (isDeferred) {
         return (
             <Suspense fallback={<PackageSkeleton fastPkg={fastPkg}/>}>
                 <Await promise={pkg as Promise<PackageManifest | null>}>
-                    {(resolvedPkg) => <PackageContent pkg={resolvedPkg} stars={stars}/>}
+                    {(resolvedPkg) => (
+                        <PackageContent
+                            pkg={resolvedPkg}
+                            stars={stars}
+                        />
+                    )}
                 </Await>
             </Suspense>
         );
     }
 
-    return <PackageContent pkg={pkg as PackageManifest | null} stars={stars}/>;
+    return <PackageContent
+        pkg={pkg as PackageManifest | null}
+        stars={stars}
+           />;
 }
 
 type PackageContentProps = {
