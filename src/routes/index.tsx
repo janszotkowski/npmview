@@ -8,6 +8,7 @@ import { searchPackages } from '@/server/search';
 import { useDebounce } from '@/hooks/useDebounce';
 import { siteConfig } from '@/utils/seo.ts';
 import { TrendingPackages } from '@/components/TrendingPackages';
+import { Promotions } from '@/components/Promotions';
 
 export const Route = createFileRoute('/')({
     headers: () => ({
@@ -99,7 +100,7 @@ function Home() {
             >
                 <Hero/>
 
-                <div className={'w-full max-w-2xl flex flex-col items-center'}>
+                <div className={'w-full max-w-2xl flex flex-col items-center relative'}>
                     <SearchInput
                         value={query}
                         onChange={setQuery}
@@ -113,12 +114,13 @@ function Home() {
                             results={results}
                             activeIndex={activeIndex}
                             onSelect={setActiveIndex}
-                            className={'w-full'}
+                            className={'absolute top-full left-0 right-0 z-50 mt-4'}
                         />
                     )}
                 </div>
 
-                {!query && <TrendingPackages/>}
+                <Promotions/>
+                <TrendingPackages/>
             </div>
         </div>
     );

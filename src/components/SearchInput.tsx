@@ -14,7 +14,7 @@ type SearchInputProps = {
 
 export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps): React.ReactElement => {
     const inputRef = useRef<HTMLInputElement>(null);
-    const { variant = 'default' } = props;
+    const {variant = 'default'} = props;
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -51,7 +51,7 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
                 className={`block w-full rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white placeholder-neutral-500 focus:outline-none focus:ring-4 focus:ring-red-500/10 focus:border-red-500 shadow-sm transition-all ${isHeader
                     ? 'pl-9 pr-3 py-2 text-sm'
                     : 'pl-12 pr-32 py-4 text-base sm:text-lg'
-                    }`}
+                }`}
                 placeholder={isHeader ? 'Search packages...' : 'Search npm packages (e.g., react, lodash, tailwind)...'}
                 aria-label={isHeader ? 'Search packages' : 'Search npm packages'}
                 autoComplete={'off'}
@@ -78,9 +78,7 @@ export const SearchInput: React.FC<SearchInputProps> = (props: SearchInputProps)
                                 <kbd className={'inline-flex items-center justify-center px-2 py-1 rounded border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-xs text-neutral-500 font-medium'}>
                                     ⌘K
                                 </kbd>
-                                <button
-                                    className={'bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-xl transition-colors text-sm'}
-                                >
+                                <button className={'cursor-pointer bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-xl transition-colors text-sm'}>
                                     Search
                                 </button>
                             </div>

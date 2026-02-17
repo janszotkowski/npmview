@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { TrendingUp } from 'lucide-react';
+import { SectionHeader } from '@/components/SectionHeader';
 
 const PACKAGES = [
     {name: 'react', label: 'react'},
@@ -14,10 +15,11 @@ const PACKAGES = [
 
 export const TrendingPackages: React.FC = (): React.ReactElement => {
     return (
-        <div className={'flex flex-col items-center gap-4 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200'}>
-            <h2 className={'text-xs font-bold tracking-widest text-neutral-500 dark:text-neutral-500 uppercase'}>
-                Trending Packages
-            </h2>
+        <div className={'w-full flex flex-col items-center gap-4 mt-16 pb-16 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200'}>
+            <SectionHeader
+                title={'Trending Packages'}
+                className={'w-full'}
+            />
             <div className={'flex flex-wrap justify-center gap-3'}>
                 {PACKAGES.map((pkg) => (
                     <Link
