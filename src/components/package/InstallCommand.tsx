@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 
 type InstallCommandProps = {
@@ -11,14 +11,15 @@ const validManagers: PackageManager[] = ['npm', 'pnpm', 'yarn', 'bun'];
 
 export const InstallCommand: React.FC<InstallCommandProps> = (props): React.ReactElement => {
     const [copied, setCopied] = useState(false);
-    const [manager, setManager] = useState<PackageManager>(() => {
-        if (typeof window === 'undefined') {
-            return 'pnpm';
-        }
+    const [manager, setManager] = useState<PackageManager>('pnpm');
 
+    useEffect(() => {
         const saved = localStorage.getItem('preferred-package-manager') as PackageManager;
-        return validManagers.includes(saved) ? saved : 'pnpm';
-    });
+        if (validManagers.includes(saved)) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setManager(saved);
+        }
+    }, []);
 
     const handleManagerChange = (pm: PackageManager): void => {
         setManager(pm);
@@ -78,7 +79,17 @@ export const InstallCommand: React.FC<InstallCommandProps> = (props): React.Reac
                     aria-label={'Copy command'}
                     type={'button'}
                 >
-                    {copied ? <Check className={'size-4 text-emerald-500'}/> : <Copy className={'size-4'}/>}
+                    {copied ? (
+                        <Check
+                            className={'size-4 text-emerald-500'}
+                            aria-hidden={'true'}
+                        />
+                    ) : (
+                        <Copy
+                            className={'size-4'}
+                            aria-hidden={'true'}
+                        />
+                    )}
                 </button>
             </div>
         </div>

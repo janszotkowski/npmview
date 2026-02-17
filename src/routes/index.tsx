@@ -76,6 +76,19 @@ function Home() {
             <div className={'absolute top-0 right-0 w-150 h-150 bg-linear-to-bl from-blue-100/80 to-transparent dark:from-blue-900/20 dark:to-transparent pointer-events-none blur-3xl'}/>
             <div className={'absolute top-0 left-0 w-150 h-150 bg-linear-to-br from-purple-100/80 to-transparent dark:from-purple-900/20 dark:to-transparent pointer-events-none blur-3xl'}/>
 
+            <script
+                type={'application/ld+json'}
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'WebSite',
+                        name: siteConfig.title,
+                        url: siteConfig.url,
+                        description: siteConfig.description,
+                    }),
+                }}
+            />
+
             <div
                 className={'w-full max-w-4xl px-4 sm:px-6 lg:px-8 flex flex-col items-center pt-[15vh] space-y-8 text-center relative z-10'}
                 onKeyDown={handleKeyDown}

@@ -26,6 +26,18 @@ export const Route = createFileRoute('/about')({
 function About(): ReactElement {
     return (
         <div className={'container mx-auto max-w-4xl px-4 py-16'}>
+            <script
+                type={'application/ld+json'}
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'AboutPage',
+                        name: `About ${siteConfig.title}`,
+                        url: `${siteConfig.url}/about`,
+                        description: 'A modern, open-source tool designed to make exploring the npm ecosystem easier, faster, and more insightful.',
+                    }),
+                }}
+            />
             <div className={'mb-12 text-center'}>
                 <h1 className={'mb-4 text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white sm:text-5xl'}>
                     About NPM View

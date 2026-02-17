@@ -18,7 +18,15 @@ import { getSecurityAdvisories } from '@/server/security.ts';
 
 export const Route = createFileRoute('/package/$name')({
     loader: async (opts) => {
-        const pkg = await getPackageManifest({data: opts.params.name});
+        const {name} = opts.params;
+        const readmePromise = getPackageReadme({data: name});
+        const downloadsPromise = getPackageDownloads({data: name});
+        const bundleSizePromise = getBundleSize({data: name});
+        const scorePromise = getPackageScore({data: name});
+        const advisoriesPromise = getSecurityAdvisories({data: name});
+        const manifestPromise = getPackageManifest({data: name});
+
+        const pkg = await manifestPromise;
 
         if (!pkg) {
             return {
@@ -31,12 +39,6 @@ export const Route = createFileRoute('/package/$name')({
                 advisories: defer(Promise.resolve(null)),
             };
         }
-
-        const readmePromise = getPackageReadme({data: opts.params.name});
-        const downloadsPromise = getPackageDownloads({data: opts.params.name});
-        const bundleSizePromise = getBundleSize({data: opts.params.name});
-        const scorePromise = getPackageScore({data: opts.params.name});
-        const advisoriesPromise = getSecurityAdvisories({data: opts.params.name});
 
         const starsPromise = (pkg.repository?.url) ? getGithubStars({data: pkg.repository.url}) : Promise.resolve(null);
 
@@ -110,6 +112,24 @@ function PackageDetail() {
 
     return (
         <div className={'min-h-screen bg-neutral-50 pb-20 dark:bg-black'}>
+            <script
+                type={'application/ld+json'}
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'SoftwareApplication',
+                        name: pkg.name,
+                        operatingSystem: 'Any',
+                        applicationCategory: 'DeveloperApplication',
+                        description: pkg.description,
+                        offers: {
+                            '@type': 'Offer',
+                            price: '0.00',
+                            priceCurrency: 'USD',
+                        },
+                    }),
+                }}
+            />
             <div className={'container mx-auto max-w-7xl px-4 py-8'}>
                 <PackageHeader
                     pkg={pkg}
@@ -129,25 +149,45 @@ function PackageDetail() {
                             <TabsList className={'mb-4 overflow-x-auto'}>
                                 <TabsTrigger
                                     value={'readme'}
-                                    icon={<FileText className={'h-4 w-4'}/>}
+                                    icon={(
+                                        <FileText
+                                            className={'h-4 w-4'}
+                                            aria-hidden={'true'}
+                                        />
+                                    )}
                                 >
                                     Readme
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value={'dependencies'}
-                                    icon={<Box className={'h-4 w-4'}/>}
+                                    icon={(
+                                        <Box
+                                            className={'h-4 w-4'}
+                                            aria-hidden={'true'}
+                                        />
+                                    )}
                                 >
                                     Dependencies
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value={'versions'}
-                                    icon={<History className={'h-4 w-4'}/>}
+                                    icon={(
+                                        <History
+                                            className={'h-4 w-4'}
+                                            aria-hidden={'true'}
+                                        />
+                                    )}
                                 >
                                     Versions
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value={'security'}
-                                    icon={<Shield className={'h-4 w-4'}/>}
+                                    icon={(
+                                        <Shield
+                                            className={'h-4 w-4'}
+                                            aria-hidden={'true'}
+                                        />
+                                    )}
                                 >
                                     Security
                                 </TabsTrigger>
