@@ -1,11 +1,14 @@
-import { ShieldCheck } from 'lucide-react';
-import { Await } from '@tanstack/react-router';
-import React, { Suspense } from 'react';
+import React from 'react';
 import type { SecurityAdvisory } from '@/types/security';
 import { SecurityAlertCard } from './SecurityAlerts';
+import { PackageManifest } from '@/types/package';
+import { useQuery } from '@tanstack/react-query';
+import { getSecurityAdvisories } from '@/server/security';
+import { Skeleton } from '@/components/Skeleton';
+import { ShieldCheck } from 'lucide-react';
 
 type SecurityAlertsTabProps = {
-    advisories: Promise<SecurityAdvisory[] | null>;
+    pkg: PackageManifest;
 };
 
 const EmptyState: React.FC = (): React.ReactElement => {
@@ -56,16 +59,35 @@ const SecurityAlertsTabContent: React.FC<SecurityAlertsTabContentProps> = (props
 };
 
 export const SecurityAlertsTab: React.FC<SecurityAlertsTabProps> = (props): React.ReactElement => {
-    return (
-        <Suspense fallback={
-            <div className={'flex items-center justify-center py-12'}>
-                <p className={'text-neutral-500'}>Loading security advisories...</p>
+    const {data, isLoading, error} = useQuery({
+        queryKey: ['package', 'advisories', props.pkg.name],
+        queryFn: () => getSecurityAdvisories({data: props.pkg.name}),
+    });
+
+    if (isLoading) {
+        return (
+            <div className={'space-y-4'}>
+                <Skeleton className={'h-8 w-48'}/>
+                <Skeleton className={'h-4 w-32'}/>
+                <div className={'space-y-4 mt-6'}>
+                    {[1, 2].map((i) => (
+                        <Skeleton
+                            key={i}
+                            className={'h-32 w-full rounded-lg'}
+                        />
+                    ))}
+                </div>
             </div>
-        }
-        >
-            <Await promise={props.advisories}>
-                {(data) => <SecurityAlertsTabContent advisories={data}/>}
-            </Await>
-        </Suspense>
-    );
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={'py-8 text-center text-red-500'}>
+                Failed to load security advisories
+            </div>
+        );
+    }
+
+    return <SecurityAlertsTabContent advisories={data ?? null}/>;
 };

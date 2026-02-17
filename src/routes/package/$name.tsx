@@ -11,10 +11,8 @@ import { PackageVersions } from '@/components/package/PackageVersions';
 import { Box, FileText, History, Shield } from 'lucide-react';
 import { InstallCommand } from '@/components/package/InstallCommand.tsx';
 import { PackageSkeleton } from '@/components/package/PackageSkeleton';
-import { SecurityAlerts } from '@/components/package/SecurityAlerts';
 import { SecurityAlertsTab } from '@/components/package/SecurityAlertsTab';
 import { getGithubStars } from '@/server/github.ts';
-import { getSecurityAdvisories } from '@/server/security.ts';
 import { Suspense } from 'react';
 import { PackageManifest } from '@/types/package.ts';
 import { SearchResultItem } from '@/types/search.ts';
@@ -28,22 +26,17 @@ export const Route = createFileRoute('/package/$name')({
         const downloadsPromise = getPackageDownloads({data: name});
         const bundleSizePromise = getBundleSize({data: name});
         const scorePromise = getPackageScore({data: name});
-        const advisoriesPromise = getSecurityAdvisories({data: name});
 
-        // If we have state from search, we use it for fast render and defer the full fetch
         let fastPkg: Partial<PackageManifest> | undefined;
         let pkgResult: Promise<PackageManifest | null> | PackageManifest | null;
         let starsPromise: Promise<number | null>;
 
         if (statePkg) {
             fastPkg = mapSearchResultToManifest(statePkg);
-            // Defer the full fetch to avoid blocking
             pkgResult = defer(getPackageManifest({data: name}));
-            // Stars depend on repo url which we might have in fastPkg or not full (mapped from links)
             const repoUrl = fastPkg.repository?.url;
             starsPromise = repoUrl ? getGithubStars({data: repoUrl}) : Promise.resolve(null);
         } else {
-            // Direct load: await data for SEO
             const fetchedPkg = await getPackageManifest({data: name});
             pkgResult = fetchedPkg;
             starsPromise = (fetchedPkg?.repository?.url) ? getGithubStars({data: fetchedPkg.repository.url}) : Promise.resolve(null);
@@ -57,14 +50,9 @@ export const Route = createFileRoute('/package/$name')({
             stars: defer(starsPromise),
             bundleSize: defer(bundleSizePromise),
             score: defer(scorePromise),
-            advisories: defer(advisoriesPromise),
         };
     },
     head: ({loaderData}) => {
-        // Try to use full pkg if available (direct load), otherwise fallback to fastPkg (search nav)
-        // Accessing loaderData.pkg directly is safe if it's data. If it's a promise, it won't have .name property.
-        // We use type narrowing or optional chaining with fallback.
-
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const pkgData = (loaderData?.pkg && 'name' in (loaderData.pkg as any))
             ? (loaderData.pkg as PackageManifest)
@@ -83,12 +71,11 @@ export const Route = createFileRoute('/package/$name')({
             };
         }
 
-        // If we have at least a name (from fastPkg or pkg), render meta
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const name = pkgData?.name || loaderData?.pkg && 'name' in (loaderData.pkg as any) ? (loaderData?.pkg as PackageManifest).name : '';
         const description = pkgData?.description || '';
 
-        if (!name) return {}; // partial load
+        if (!name) return {};
 
         return {
             title: `Package: ${name} | ${siteConfig.title}`,
@@ -135,14 +122,12 @@ function mapSearchResultToManifest(item: SearchResultItem): Partial<PackageManif
         ],
         repository: item.links.repository ? {type: 'git', url: item.links.repository} : undefined,
         homepage: item.links.homepage,
-        license: undefined, // Not available in search result usually
+        license: undefined,
     };
 }
 
 function PackageDetail() {
     const {pkg, fastPkg, stars} = Route.useLoaderData();
-
-    // handling if pkg is a promise (deferred) or data
 
     const isDeferred = pkg && typeof pkg === 'object' && 'then' in pkg;
 
@@ -161,19 +146,21 @@ function PackageDetail() {
         );
     }
 
-    return <PackageContent
-        pkg={pkg as PackageManifest | null}
-        stars={stars}
-           />;
+    return (
+        <PackageContent
+            pkg={pkg as PackageManifest | null}
+            stars={stars}
+        />
+    );
 }
 
 type PackageContentProps = {
     pkg: PackageManifest | null;
-    stars: Promise<number | null>; // stars is always deferred in loader
+    stars: Promise<number | null>;
 };
 
 function PackageContent({pkg, stars}: PackageContentProps) {
-    const {readme, downloads, bundleSize, score, advisories} = Route.useLoaderData();
+    const {readme, downloads, bundleSize, score} = Route.useLoaderData();
 
     if (!pkg) {
         return (
@@ -279,15 +266,13 @@ function PackageContent({pkg, stars}: PackageContentProps) {
 
                             <TabsContent value={'versions'}>
                                 <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
-                                    <PackageVersions
-                                        pkg={pkg}
-                                    />
+                                    <PackageVersions pkg={pkg}/>
                                 </div>
                             </TabsContent>
 
                             <TabsContent value={'security'}>
                                 <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
-                                    <SecurityAlertsTab advisories={advisories}/>
+                                    <SecurityAlertsTab pkg={pkg}/>
                                 </div>
                             </TabsContent>
                         </Tabs>
@@ -295,7 +280,6 @@ function PackageContent({pkg, stars}: PackageContentProps) {
 
                     <div className={'space-y-8 lg:col-span-4'}>
                         <InstallCommand packageName={pkg.name}/>
-                        <SecurityAlerts advisories={advisories}/>
                         <PackageSidebar pkg={pkg}/>
                     </div>
                 </div>
