@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { TrendingUp } from 'lucide-react';
 import { SectionHeader } from '@/components/SectionHeader';
+import { encodePackageName } from '@/utils/url.ts';
 
 const PACKAGES = [
     {name: 'react', label: 'react'},
@@ -25,7 +26,7 @@ export const TrendingPackages: React.FC = (): React.ReactElement => {
                     <Link
                         key={pkg.name}
                         to={'/package/$name'}
-                        params={{name: pkg.name}}
+                        params={{name: encodePackageName(pkg.name)}}
                         className={'group flex items-center gap-1.5 px-4 py-2 bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-full text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:border-red-500/30 hover:text-red-700 dark:hover:text-red-400 hover:shadow-sm transition-all duration-300'}
                     >
                         <TrendingUp className={'w-3 h-3 text-emerald-500 group-hover:opacity-100 transition-opacity'}/>

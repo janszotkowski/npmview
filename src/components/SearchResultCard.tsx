@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { SearchResultItem } from '@/types/search.ts';
 import { useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { encodePackageName } from '@/utils/url.ts';
 
 type SearchResultCardProps = {
     readonly pkg: SearchResultItem;
@@ -29,7 +30,7 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = (props): React.
         >
             <Link
                 to={'/package/$name'}
-                params={{name: props.pkg.name}}
+                params={{name: encodePackageName(props.pkg.name)}}
                 ref={linkRef}
                 onFocus={props.onFocus}
                 className={twMerge(

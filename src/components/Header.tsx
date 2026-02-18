@@ -1,6 +1,6 @@
 import { Link, useLocation } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
-import { Github, PackageSearch } from 'lucide-react';
+import { Github, PackageSearch, TrendingUp } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Search } from '@/components/Search';
 import { useScroll } from '@/hooks/useScroll';
@@ -30,6 +30,13 @@ export const Header: React.FC = (): ReactElement => {
                             <PackageSearch className={'size-5'}/>
                         </div>
                         <span className={'hidden sm:inline'}>npmview</span>
+                    </Link>
+                    <Link
+                        to={'/top'}
+                        className={'hidden sm:flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-colors'}
+                    >
+                        <TrendingUp className={'size-4'}/>
+                        <span>Top Packages</span>
                     </Link>
                     {pathname !== '/' && (
                         <Search

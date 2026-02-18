@@ -16,10 +16,11 @@ import { getGithubStars } from '@/server/github.ts';
 import { Suspense } from 'react';
 import { PackageManifest } from '@/types/package.ts';
 import { SearchResultItem } from '@/types/search.ts';
+import { decodePackageName } from '@/utils/url.ts';
 
 export const Route = createFileRoute('/package/$name')({
     loader: async (opts) => {
-        const {name} = opts.params;
+        const name = decodePackageName(opts.params.name);
         const statePkg = opts.location.state.package;
 
         const readmePromise = getPackageReadme({data: name});
