@@ -1,5 +1,10 @@
 import { PackageManifest } from '@/types/package';
 import { Link } from '@tanstack/react-router';
+import { lazy, Suspense, useState } from 'react';
+import { LayoutList, Network } from 'lucide-react';
+import { Skeleton } from '@/components/Skeleton';
+
+const DependencyUniverse = lazy(() => import('./DependencyUniverse'));
 
 type PackageDependenciesProps = {
     readonly pkg: PackageManifest;
@@ -8,6 +13,7 @@ type PackageDependenciesProps = {
 export const PackageDependencies: React.FC<PackageDependenciesProps> = (props): React.ReactElement => {
     const {dependencies, devDependencies, peerDependencies} = props.pkg;
     const hasDependencies = dependencies ?? devDependencies ?? peerDependencies;
+    const [view, setView] = useState<'list' | 'universe'>('list');
 
     if (!hasDependencies) {
         return (
@@ -18,27 +24,70 @@ export const PackageDependencies: React.FC<PackageDependenciesProps> = (props): 
     }
 
     return (
-        <div className={'space-y-8'}>
-            {dependencies && (
-                <DependencyList
-                    title={'Dependencies'}
-                    dependencies={dependencies}
-                    count={Object.keys(dependencies).length}
-                />
-            )}
-            {peerDependencies && (
-                <DependencyList
-                    title={'Peer Dependencies'}
-                    dependencies={peerDependencies}
-                    count={Object.keys(peerDependencies).length}
-                />
-            )}
-            {devDependencies && (
-                <DependencyList
-                    title={'Dev Dependencies'}
-                    dependencies={devDependencies}
-                    count={Object.keys(devDependencies).length}
-                />
+        <div className={'space-y-6'}>
+            <div className={'flex justify-end px-8 pt-4'}>
+                <div className={'inline-flex rounded-lg border border-neutral-200 bg-neutral-100 p-1 dark:border-neutral-800 dark:bg-neutral-900'}>
+                    <button
+                        onClick={() => setView('list')}
+                        className={`cursor-pointer flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${view === 'list'
+                            ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-800 dark:text-neutral-100'
+                            : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
+                        }`}
+                    >
+                        <LayoutList className={'h-4 w-4'}/>
+                        List
+                    </button>
+                    <button
+                        onClick={() => setView('universe')}
+                        className={`cursor-pointer flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${view === 'universe'
+                            ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-800 dark:text-neutral-100'
+                            : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
+                        }`}
+                    >
+                        <Network className={'h-4 w-4'}/>
+                        Universe
+                    </button>
+                </div>
+            </div>
+
+            {view === 'list' ? (
+                <div className={'space-y-8 px-8 pb-8'}>
+                    {dependencies && (
+                        <DependencyList
+                            title={'Dependencies'}
+                            dependencies={dependencies}
+                            count={Object.keys(dependencies).length}
+                        />
+                    )}
+                    {peerDependencies && (
+                        <DependencyList
+                            title={'Peer Dependencies'}
+                            dependencies={peerDependencies}
+                            count={Object.keys(peerDependencies).length}
+                        />
+                    )}
+                    {devDependencies && (
+                        <DependencyList
+                            title={'Dev Dependencies'}
+                            dependencies={devDependencies}
+                            count={Object.keys(devDependencies).length}
+                        />
+                    )}
+                </div>
+            ) : (
+                <div className={'min-h-[500px] border-t border-neutral-200 dark:border-neutral-800'}>
+                    <Suspense fallback={
+                        <div className={'flex h-[500px] items-center justify-center'}>
+                            <div className={'space-y-4 text-center'}>
+                                <Skeleton className={'mx-auto h-32 w-32 rounded-full'}/>
+                                <p className={'text-sm text-neutral-500'}>Loading Universe...</p>
+                            </div>
+                        </div>
+                    }
+                    >
+                        <DependencyUniverse pkg={props.pkg}/>
+                    </Suspense>
+                </div>
             )}
         </div>
     );

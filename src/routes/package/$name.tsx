@@ -207,7 +207,10 @@ function PackageContent({pkg, stars}: PackageContentProps) {
 
                 <div className={'mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12'}>
                     <div className={'space-y-8 lg:col-span-8'}>
-                        <Tabs defaultValue={'readme'}>
+                        <Tabs
+                            defaultValue={'readme'}
+                            key={pkg.name}
+                        >
                             <TabsList className={'mb-4 overflow-x-auto'}>
                                 <TabsTrigger
                                     value={'readme'}
