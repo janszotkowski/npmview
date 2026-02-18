@@ -22,7 +22,7 @@ This project aggregates data from multiple public APIs to provide a comprehensiv
 - **[NPM Downloads API](https://api.npmjs.org)**: Provides weekly download statistics and historical trends.
 - **[BundlePhobia](https://bundlephobia.com)**: Used to fetch bundle size, minified size, and gzip size information.
 - **[npms.io](https://npms.io)**: Supplies package scoring metrics (Quality, Popularity, Maintenance).
-- **[jsdelivr](https://cdn.jsdelivr.net/)**: Used to fetch the raw README.md files and other assets from package distributions.
+- **[jsDelivr](https://cdn.jsdelivr.net/)**: Used to fetch the raw README.md files and other assets from package distributions.
 - **[GitHub REST API](https://docs.github.com/en/rest)**: Fetches repository star counts.
 - **[OSV (Open Source Vulnerabilities)](https://osv.dev)**: Provides comprehensive security vulnerability data for npm packages.
 
