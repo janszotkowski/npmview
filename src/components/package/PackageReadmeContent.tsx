@@ -34,6 +34,7 @@ const PackageReadmeContent: React.FC<PackageReadmeContentProps> = (props: Packag
                     rehypeHighlight,
                 ]}
                 components={{
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     img: ({node, ...props}) => (
                         <img
                             {...props}
@@ -42,12 +43,17 @@ const PackageReadmeContent: React.FC<PackageReadmeContentProps> = (props: Packag
                             className={'rounded-lg border border-zinc-200 dark:border-zinc-800'}
                         />
                     ),
-                    code: ({node, className, children, ...rest}: any) => {
+                     
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    code: ({className, children, ...rest}: any) => {
                         const match = /language-(\w+)/.exec(className || '');
 
                         if (match) {
                             return (
-                                <code className={className} {...rest}>
+                                <code
+                                    className={className}
+                                    {...rest}
+                                >
                                     {children}
                                 </code>
                             );
