@@ -6,7 +6,7 @@ const NPM_REGISTRY_URL = 'https://registry.npmjs.org';
 const NPM_DOWNLOADS_URL = 'https://api.npmjs.org/downloads/range';
 const BUNDLEPHOBIA_URL = 'https://bundlephobia.com/api/size';
 const NPMS_API_URL = 'https://api.npms.io/v2/package';
-const UNPKG_CDN_URL = 'https://unpkg.com';
+const JS_DELIVR_CDN_URL = 'https://cdn.jsdelivr.net/npm';
 
 export const getPackageManifest = createServerFn({method: 'GET'})
     .inputValidator((name: string) => name)
@@ -58,12 +58,12 @@ export const getPackageReadme = createServerFn({method: 'GET'})
         }
 
         try {
-            const response = await fetch(`${UNPKG_CDN_URL}/${name}/README.md`);
+            const response = await fetch(`${JS_DELIVR_CDN_URL}/${name}/README.md`);
             if (!response.ok) {
                 if (response.status === 404) {
                     return null;
                 }
-                throw new Error(`Unpkg error: ${response.statusText}`);
+                throw new Error(`JsDelivr error: ${response.statusText}`);
             }
             const data = await response.text();
             await setBinaryCache(cacheKey, data, 3600);
