@@ -5,19 +5,13 @@ import { getTopPackages } from '@/server/package';
 import { TopPackagesList } from '@/components/TopPackagesList';
 
 export const Route = createFileRoute('/top')({
-    loader: async () => {
-        return getTopPackages({data: 'week'});
-    },
     component: TopPackagesPage,
 });
 
 function TopPackagesPage(): ReactElement {
-    const initialData = Route.useLoaderData();
-
     const topPackagesQuery = useQuery({
         queryKey: ['topPackages', 'week'],
         queryFn: () => getTopPackages({data: 'week'}),
-        initialData: initialData,
         staleTime: 1000 * 60 * 60,
     });
 
