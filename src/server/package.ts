@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getBinaryCache, setBinaryCache } from './redis';
-import { BundleSize, DownloadRange, MinimalVersion, PackageManifest, PackageScore, PackageVersionsResponse } from '@/types/package.ts';
+import { BundleSize, DownloadRange, MinimalVersion, PackageManifest, PackageScore, PackageVersionsResponse, TopPackage } from '@/types/package.ts';
 
 const NPM_REGISTRY_URL = 'https://registry.npmjs.org';
 const NPM_DOWNLOADS_URL = 'https://api.npmjs.org/downloads/range';
@@ -247,3 +247,23 @@ export const getPackageScore = createServerFn({method: 'GET'})
             return null;
         }
     });
+
+export const getTopPackages = createServerFn({method: 'GET'})
+    .inputValidator((period?: 'day' | 'week' | 'month' | 'year') => period)
+    .handler(async (ctx) => {
+        const period = ctx.data;
+
+        try {
+            const response = await fetch(`https://data.jsdelivr.com/v1/stats/packages?period=${period}&limit=10&type=npm`);
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch top packages: ${response.statusText}`);
+            }
+
+            return (await response.json()) as TopPackage[];
+        } catch (error) {
+            console.error('Top packages fetch failed:', error);
+            return [];
+        }
+    });
+

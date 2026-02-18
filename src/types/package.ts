@@ -111,3 +111,13 @@ export type PackageVersionsResponse = {
     total: number;
     versions: MinimalVersion[];
 };
+
+export type TopPackage = {
+    name: string;
+    hits: number;
+    bandwidth: number;
+    prev?: {
+        hits: number;
+        bandwidth: number;
+    };
+};
