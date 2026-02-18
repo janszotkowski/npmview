@@ -3,6 +3,7 @@ import { SearchResultItem } from '@/types/search.ts';
 import { useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { encodePackageName } from '@/utils/url.ts';
+import { format } from 'date-fns';
 
 type SearchResultCardProps = {
     readonly pkg: SearchResultItem;
@@ -42,15 +43,15 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = (props): React.
                 preload={'viewport'}
             >
                 <div className={'flex justify-between items-start'}>
-                    <div>
-                        <h4 className={'text-xl font-bold text-neutral-900 dark:text-white group-hover:text-red-500 transition-colors'}>
+                    <div className={'min-w-0 flex-1'}>
+                        <h4 className={'text-xl font-bold text-neutral-900 dark:text-white group-hover:text-red-500 transition-colors truncate'}>
                             {props.pkg.name}
                         </h4>
-                        <p className={'text-neutral-600 dark:text-neutral-400 mt-1'}>
+                        <p className={'text-neutral-600 dark:text-neutral-400 mt-1 truncate'}>
                             {props.pkg.description}
                         </p>
                     </div>
-                    <div className={'text-right'}>
+                    <div className={'text-right shrink-0 ml-2'}>
                         <span className={'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200'}>
                             v{props.pkg.version}
                         </span>
@@ -62,7 +63,7 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = (props): React.
                         <span className={'font-medium text-neutral-900 dark:text-white'}>{props.pkg.publisher?.username}</span>
                     </div>
                     <span>•</span>
-                    <span>{props.pkg.date}</span>
+                    <span>{format(new Date(props.pkg.date), 'dd.MM.yyyy')}</span>
                 </div>
             </Link>
         </li>
