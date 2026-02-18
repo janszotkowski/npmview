@@ -173,7 +173,7 @@ function PackageContent({pkg, stars}: PackageContentProps) {
     }
 
     return (
-        <div className={'min-h-screen bg-neutral-50 pb-20 dark:bg-black'}>
+        <div className={'min-h-screen pb-20'}>
             <script
                 type={'application/ld+json'}
                 dangerouslySetInnerHTML={{

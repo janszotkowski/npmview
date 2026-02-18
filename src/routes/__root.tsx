@@ -8,7 +8,8 @@ import { QueryClient } from '@tanstack/react-query';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { ThemeProvider } from '@/components/ThemeProvider';
-import { siteConfig, defaultMeta } from '@/utils/seo.ts';
+import { defaultMeta, siteConfig } from '@/utils/seo.ts';
+import { BackgroundGradient } from '@/components/BackgroundGradient';
 
 export const Route = createRootRouteWithContext<{
     queryClient: QueryClient
@@ -43,10 +44,6 @@ export const Route = createRootRouteWithContext<{
                 rel: 'stylesheet',
                 href: appCss,
             },
-            // {rel: 'icon', href: '/favicon.ico'},
-            // {rel: 'icon', type: 'image/png', sizes: '96x96', href: '/favicon-96x96.png'},
-            // {rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png'},
-            // {rel: 'manifest', href: '/site.webmanifest'},
         ],
     }),
     component: RootComponent,
@@ -65,15 +62,18 @@ function RootComponent() {
                 >
                     Skip to main content
                 </a>
-                <div className={'flex min-h-screen flex-col bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50'}>
-                    <Header/>
-                    <main
-                        id={'main-content'}
-                        className={'flex-1'}
-                    >
-                        <Outlet/>
-                    </main>
-                    <Footer/>
+                <div className={'flex min-h-screen flex-col bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50 relative'}>
+                    <BackgroundGradient/>
+                    <div className={'relative z-10 flex flex-col min-h-screen'}>
+                        <Header/>
+                        <main
+                            id={'main-content'}
+                            className={'flex-1'}
+                        >
+                            <Outlet/>
+                        </main>
+                        <Footer/>
+                    </div>
                 </div>
             </ThemeProvider>
         </RootDocument>
