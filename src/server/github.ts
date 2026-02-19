@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getBinaryCache, setBinaryCache } from './redis';
+import { CACHE_TTL, getDeduplicatedRequest } from './cache-config';
 
 const GITHUB_API_URL = 'https://api.github.com';
 
@@ -23,31 +24,33 @@ export const getGithubStars = createServerFn({method: 'GET'})
 
             const cacheKey = `github:stars:${owner}/${repo}`;
 
-            const cachedResult = await getBinaryCache<number>(cacheKey);
-            if (cachedResult !== null) {
-                return cachedResult;
-            }
-
-            const response = await fetch(`${GITHUB_API_URL}/repos/${owner}/${repo}`, {
-                headers: {
-                    'Accept': 'application/vnd.github.v3+json',
-                    'User-Agent': 'npmview-app',
-                },
-            });
-
-            if (!response.ok) {
-                if (response.status === 404) {
-                    return null;
+            return getDeduplicatedRequest(cacheKey, async () => {
+                const cachedResult = await getBinaryCache<number>(cacheKey);
+                if (cachedResult !== null) {
+                    return cachedResult;
                 }
-                throw new Error(`GitHub API error: ${response.statusText}`);
-            }
 
-            const data = (await response.json()) as GitHubRepoData;
-            const stars = data.stargazers_count;
+                const response = await fetch(`${GITHUB_API_URL}/repos/${owner}/${repo}`, {
+                    headers: {
+                        'Accept': 'application/vnd.github.v3+json',
+                        'User-Agent': 'npmview-app',
+                    },
+                });
 
-            await setBinaryCache(cacheKey, stars, 86400); // Cache for 24 hours
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        return null;
+                    }
+                    throw new Error(`GitHub API error: ${response.statusText}`);
+                }
 
-            return stars;
+                const data = (await response.json()) as GitHubRepoData;
+                const stars = data.stargazers_count;
+
+                await setBinaryCache(cacheKey, stars, CACHE_TTL.GITHUB_STARS);
+
+                return stars;
+            });
         } catch (error) {
             console.error('Failed to fetch GitHub stars:', error);
             return null;

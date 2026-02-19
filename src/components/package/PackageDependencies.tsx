@@ -11,7 +11,7 @@ type PackageDependenciesProps = {
 };
 
 export const PackageDependencies: React.FC<PackageDependenciesProps> = (props): React.ReactElement => {
-    const {dependencies, devDependencies, peerDependencies} = props.pkg;
+    const { dependencies, devDependencies, peerDependencies } = props.pkg;
     const hasDependencies = dependencies ?? devDependencies ?? peerDependencies;
     const [view, setView] = useState<'list' | 'universe'>('list');
 
@@ -32,9 +32,9 @@ export const PackageDependencies: React.FC<PackageDependenciesProps> = (props): 
                         className={`cursor-pointer flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${view === 'list'
                             ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-800 dark:text-neutral-100'
                             : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
-                        }`}
+                            }`}
                     >
-                        <LayoutList className={'h-4 w-4'}/>
+                        <LayoutList className={'h-4 w-4'} />
                         List
                     </button>
                     <button
@@ -42,9 +42,9 @@ export const PackageDependencies: React.FC<PackageDependenciesProps> = (props): 
                         className={`cursor-pointer flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${view === 'universe'
                             ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-800 dark:text-neutral-100'
                             : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
-                        }`}
+                            }`}
                     >
-                        <Network className={'h-4 w-4'}/>
+                        <Network className={'h-4 w-4'} />
                         Universe
                     </button>
                 </div>
@@ -79,13 +79,13 @@ export const PackageDependencies: React.FC<PackageDependenciesProps> = (props): 
                     <Suspense fallback={
                         <div className={'flex h-[500px] items-center justify-center'}>
                             <div className={'space-y-4 text-center'}>
-                                <Skeleton className={'mx-auto h-32 w-32 rounded-full'}/>
+                                <Skeleton className={'mx-auto h-32 w-32 rounded-full'} />
                                 <p className={'text-sm text-neutral-500'}>Loading Universe...</p>
                             </div>
                         </div>
                     }
                     >
-                        <DependencyUniverse pkg={props.pkg}/>
+                        <DependencyUniverse pkg={props.pkg} />
                     </Suspense>
                 </div>
             )}
@@ -113,8 +113,14 @@ const DependencyList: React.FC<DependencyListProps> = (props): React.ReactElemen
                     <Link
                         key={name}
                         to={'/package/$name'}
-                        params={{name}}
+                        params={{ name }}
                         preload={'intent'}
+                        onMouseEnter={() => {
+                            const link = document.querySelector(`[href="/package/${name}"]`) as HTMLAnchorElement;
+                            if (link) {
+                                link.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+                            }
+                        }}
                         className={'group flex flex-col rounded-lg border border-neutral-200 p-3 hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-900'}
                     >
                         <span className={'font-medium text-neutral-900 group-hover:text-red-700 dark:text-neutral-100 dark:group-hover:text-red-500'}>

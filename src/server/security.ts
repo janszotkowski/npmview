@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getBinaryCache, setBinaryCache } from './redis';
 import type { OSVResponse, OSVVulnerability, SecurityAdvisory } from '@/types/security';
+import { CACHE_TTL, getDeduplicatedRequest } from './cache-config';
 
 const OSV_API_URL = 'https://api.osv.dev/v1/query';
 
@@ -85,55 +86,57 @@ export const getSecurityAdvisories = createServerFn({method: 'GET'})
 
         const cacheKey = `osv:security:${name}`;
 
-        const cachedResult = await getBinaryCache<SecurityAdvisory[]>(cacheKey);
-        if (cachedResult) {
-            return cachedResult;
-        }
-
-        try {
-            const response = await fetch(OSV_API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    package: {
-                        name,
-                        ecosystem: 'npm',
-                    },
-                }),
-            });
-
-            if (!response.ok) {
-                console.warn(`Failed to fetch security advisories for ${name}: ${response.statusText}`);
-                return null;
+        return getDeduplicatedRequest(cacheKey, async () => {
+            const cachedResult = await getBinaryCache<SecurityAdvisory[]>(cacheKey);
+            if (cachedResult) {
+                return cachedResult;
             }
 
-            const data: OSVResponse = await response.json();
-            const vulnerabilities = data.vulns ?? [];
-
-            const advisories: SecurityAdvisory[] = vulnerabilities
-                .map((vuln) => ({
-                    id: vuln.id,
-                    ghsa_id: vuln.id.startsWith('GHSA-') ? vuln.id : '',
-                    summary: vuln.summary || vuln.details?.split('\n')[0] || 'No summary available',
-                    severity: getSeverityFromOSV(vuln),
-                    url: getAdvisoryUrl(vuln),
-                    published_at: vuln.published || vuln.modified || new Date().toISOString(),
-                    vulnerable_versions: getVulnerableVersions(vuln),
-                    patched_versions: getPatchedVersions(vuln),
-                }))
-                .sort((a, b) => {
-                    const dateA = new Date(a.published_at).getTime();
-                    const dateB = new Date(b.published_at).getTime();
-                    return dateB - dateA;
+            try {
+                const response = await fetch(OSV_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        package: {
+                            name,
+                            ecosystem: 'npm',
+                        },
+                    }),
                 });
 
-            await setBinaryCache(cacheKey, advisories, 86400); // Cache for 24 hours
+                if (!response.ok) {
+                    console.warn(`Failed to fetch security advisories for ${name}: ${response.statusText}`);
+                    return null;
+                }
 
-            return advisories;
-        } catch (error) {
-            console.error(`Security advisories fetch failed for ${name}:`, error);
-            return null;
-        }
+                const data: OSVResponse = await response.json();
+                const vulnerabilities = data.vulns ?? [];
+
+                const advisories: SecurityAdvisory[] = vulnerabilities
+                    .map((vuln) => ({
+                        id: vuln.id,
+                        ghsa_id: vuln.id.startsWith('GHSA-') ? vuln.id : '',
+                        summary: vuln.summary || vuln.details?.split('\n')[0] || 'No summary available',
+                        severity: getSeverityFromOSV(vuln),
+                        url: getAdvisoryUrl(vuln),
+                        published_at: vuln.published || vuln.modified || new Date().toISOString(),
+                        vulnerable_versions: getVulnerableVersions(vuln),
+                        patched_versions: getPatchedVersions(vuln),
+                    }))
+                    .sort((a, b) => {
+                        const dateA = new Date(a.published_at).getTime();
+                        const dateB = new Date(b.published_at).getTime();
+                        return dateB - dateA;
+                    });
+
+                await setBinaryCache(cacheKey, advisories, CACHE_TTL.SECURITY);
+
+                return advisories;
+            } catch (error) {
+                console.error(`Security advisories fetch failed for ${name}:`, error);
+                return null;
+            }
+        });
     });

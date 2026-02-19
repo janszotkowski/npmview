@@ -5,6 +5,7 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeExternalLinks from 'rehype-external-links';
 import 'highlight.js/styles/github-dark.css';
+import { ReadmeImage } from './ReadmeImage';
 
 type PackageReadmeContentProps = {
     content: string | null | undefined;
@@ -30,22 +31,23 @@ const PackageReadmeContent: React.FC<PackageReadmeContentProps> = (props: Packag
                             span: ['className'],
                         },
                     }],
-                    [rehypeExternalLinks, {target: '_blank', rel: ['nofollow', 'noopener', 'noreferrer']}],
+                    [rehypeExternalLinks, { target: '_blank', rel: ['nofollow', 'noopener', 'noreferrer'] }],
                     rehypeHighlight,
                 ]}
                 components={{
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    img: ({node, ...props}) => (
-                        <img
-                            {...props}
-                            loading={'lazy'}
-                            style={{maxWidth: '100%', height: 'auto'}}
+                    img: ({ node, src, alt, title, ...rest }) => (
+                        <ReadmeImage
+                            src={src}
+                            alt={alt}
+                            title={title}
                             className={'rounded-lg border border-zinc-200 dark:border-zinc-800'}
+                            style={{ maxWidth: '100%', height: 'auto' }}
                         />
                     ),
-                     
+
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    code: ({className, children, ...rest}: any) => {
+                    code: ({ className, children, ...rest }: any) => {
                         const match = /language-(\w+)/.exec(className || '');
 
                         if (match) {
@@ -68,7 +70,7 @@ const PackageReadmeContent: React.FC<PackageReadmeContentProps> = (props: Packag
                             </code>
                         );
                     },
-                    pre: ({children}) => (
+                    pre: ({ children }) => (
                         <pre className={'bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden p-4 not-prose'}>
                             {children}
                         </pre>

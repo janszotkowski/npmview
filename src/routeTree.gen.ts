@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PackageNameRouteImport } from './routes/package/$name'
 import { Route as ApiSentryRouteImport } from './routes/api/sentry'
+import { Route as ApiImageProxyRouteImport } from './routes/api/image-proxy'
 
 const TopRoute = TopRouteImport.update({
   id: '/top',
@@ -40,11 +41,17 @@ const ApiSentryRoute = ApiSentryRouteImport.update({
   path: '/api/sentry',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiImageProxyRoute = ApiImageProxyRouteImport.update({
+  id: '/api/image-proxy',
+  path: '/api/image-proxy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/top': typeof TopRoute
+  '/api/image-proxy': typeof ApiImageProxyRoute
   '/api/sentry': typeof ApiSentryRoute
   '/package/$name': typeof PackageNameRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/top': typeof TopRoute
+  '/api/image-proxy': typeof ApiImageProxyRoute
   '/api/sentry': typeof ApiSentryRoute
   '/package/$name': typeof PackageNameRoute
 }
@@ -60,21 +68,42 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/top': typeof TopRoute
+  '/api/image-proxy': typeof ApiImageProxyRoute
   '/api/sentry': typeof ApiSentryRoute
   '/package/$name': typeof PackageNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/top' | '/api/sentry' | '/package/$name'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/top'
+    | '/api/image-proxy'
+    | '/api/sentry'
+    | '/package/$name'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/top' | '/api/sentry' | '/package/$name'
-  id: '__root__' | '/' | '/about' | '/top' | '/api/sentry' | '/package/$name'
+  to:
+    | '/'
+    | '/about'
+    | '/top'
+    | '/api/image-proxy'
+    | '/api/sentry'
+    | '/package/$name'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/top'
+    | '/api/image-proxy'
+    | '/api/sentry'
+    | '/package/$name'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   TopRoute: typeof TopRoute
+  ApiImageProxyRoute: typeof ApiImageProxyRoute
   ApiSentryRoute: typeof ApiSentryRoute
   PackageNameRoute: typeof PackageNameRoute
 }
@@ -116,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSentryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/image-proxy': {
+      id: '/api/image-proxy'
+      path: '/api/image-proxy'
+      fullPath: '/api/image-proxy'
+      preLoaderRoute: typeof ApiImageProxyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -123,6 +159,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   TopRoute: TopRoute,
+  ApiImageProxyRoute: ApiImageProxyRoute,
   ApiSentryRoute: ApiSentryRoute,
   PackageNameRoute: PackageNameRoute,
 }

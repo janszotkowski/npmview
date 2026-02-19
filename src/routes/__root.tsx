@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 import type { ReactNode } from 'react';
-import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
+import { createRootRouteWithContext, HeadContent, Outlet, Scripts, useRouter } from '@tanstack/react-router';
 import appCss from '../styles/app.css?url';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -10,6 +10,9 @@ import { Header } from '@/components/Header';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { defaultMeta, siteConfig } from '@/utils/seo.ts';
 import { BackgroundGradient } from '@/components/BackgroundGradient';
+import { useEffect } from 'react';
+import { encodePackageName } from '@/utils/url';
+import { registerServiceWorker } from '@/utils/service-worker';
 
 export const Route = createRootRouteWithContext<{
     queryClient: QueryClient
@@ -50,6 +53,22 @@ export const Route = createRootRouteWithContext<{
 });
 
 function RootComponent() {
+    const router = useRouter();
+
+    useEffect(() => {
+        registerServiceWorker();
+    }, []);
+
+    useEffect(() => {
+        const topPackages = ['react', 'next', 'vue', 'angular', 'typescript', 'vite'];
+        topPackages.forEach(name => {
+            void router.preloadRoute({
+                to: '/package/$name',
+                params: { name: encodePackageName(name) },
+            });
+        });
+    }, [router]);
+
     return (
         <RootDocument>
             <ThemeProvider
@@ -63,16 +82,16 @@ function RootComponent() {
                     Skip to main content
                 </a>
                 <div className={'flex min-h-screen flex-col bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-50 relative'}>
-                    <BackgroundGradient/>
+                    <BackgroundGradient />
                     <div className={'relative z-10 flex flex-col min-h-screen'}>
-                        <Header/>
+                        <Header />
                         <main
                             id={'main-content'}
                             className={'flex-1'}
                         >
-                            <Outlet/>
+                            <Outlet />
                         </main>
-                        <Footer/>
+                        <Footer />
                     </div>
                 </div>
             </ThemeProvider>
@@ -80,18 +99,18 @@ function RootComponent() {
     );
 }
 
-function RootDocument({children}: Readonly<{ children: ReactNode }>) {
+function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
     return (
         <html lang={'en'}>
-        <head>
-            <HeadContent/>
-        </head>
-        <body>
-        {children}
-        <TanStackRouterDevtools position={'bottom-right'}/>
-        <ReactQueryDevtools buttonPosition={'bottom-left'}/>
-        <Scripts/>
-        </body>
+            <head>
+                <HeadContent />
+            </head>
+            <body>
+                {children}
+                <TanStackRouterDevtools position={'bottom-right'} />
+                <ReactQueryDevtools buttonPosition={'bottom-left'} />
+                <Scripts />
+            </body>
         </html>
     );
 }

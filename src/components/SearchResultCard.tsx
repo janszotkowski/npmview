@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { encodePackageName } from '@/utils/url.ts';
 import { format } from 'date-fns';
+import { usePrefetchPackage } from '@/hooks/usePrefetch';
 
 type SearchResultCardProps = {
     readonly pkg: SearchResultItem;
@@ -14,6 +15,7 @@ type SearchResultCardProps = {
 
 export const SearchResultCard: React.FC<SearchResultCardProps> = (props): React.ReactElement => {
     const linkRef = useRef<HTMLAnchorElement>(null);
+    const prefetchPackage = usePrefetchPackage();
 
     useEffect(() => {
         if (props.isActive) {
@@ -34,13 +36,14 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = (props): React.
                 params={{name: encodePackageName(props.pkg.name)}}
                 ref={linkRef}
                 onFocus={props.onFocus}
+                onMouseEnter={() => prefetchPackage(props.pkg.name)}
                 className={twMerge(
                     'block bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 transition-colors relative outline-none',
                     'hover:border-red-500 dark:hover:border-red-500',
                     props.isActive ? 'ring-2 ring-red-500 border-red-500 z-10' : '',
                 )}
                 state={{package: props.pkg}}
-                preload={'viewport'}
+                preload={'intent'}
             >
                 <div className={'flex justify-between items-start'}>
                     <div className={'min-w-0 flex-1'}>
