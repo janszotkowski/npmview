@@ -6,6 +6,7 @@ type SearchResultsProps = {
     results: SearchResultItem[];
     activeIndex: number;
     onSelect: (index: number) => void;
+    onResultClick?: (name: string) => void;
     className?: string;
     query: string;
     isLoading: boolean;
@@ -21,7 +22,7 @@ export const SearchResults: React.FC<SearchResultsProps> = (props): React.ReactE
             return (
                 <div className={`w-full text-center ${props.className || ''} mx-auto bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-2xl p-8`}>
                     <div className={'flex flex-col items-center justify-center text-neutral-500 dark:text-neutral-400'}>
-                        <PackageOpen className={'h-12 w-12 mb-4 opacity-50'}/>
+                        <PackageOpen className={'h-12 w-12 mb-4 opacity-50'} />
                         <h3 className={'text-lg font-medium text-neutral-900 dark:text-white mb-1'}>
                             No results found
                         </h3>
@@ -54,6 +55,7 @@ export const SearchResults: React.FC<SearchResultsProps> = (props): React.ReactE
                         isActive={index === props.activeIndex}
                         id={`search-result-${index}`}
                         onFocus={() => props.onSelect(index)}
+                        onResultClick={props.onResultClick}
                     />
                 ))}
             </ul>

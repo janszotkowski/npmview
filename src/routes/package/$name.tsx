@@ -1,32 +1,32 @@
-import { Await, createFileRoute, defer } from '@tanstack/react-router';
-import { getBundleSize, getPackageDownloads, getPackageManifest, getPackageReadme, getPackageScore } from '@/server/package';
-import { defaultMeta, siteConfig } from '@/utils/seo';
+import { InstallCommand } from '@/components/package/InstallCommand.tsx';
+import { PackageDependencies } from '@/components/package/PackageDependencies';
 import { PackageHeader } from '@/components/package/PackageHeader';
 import { PackageReadme } from '@/components/package/PackageReadme';
 import { PackageSidebar } from '@/components/package/PackageSidebar';
-import { PackageStats } from '@/components/package/PackageStats';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
-import { PackageDependencies } from '@/components/package/PackageDependencies';
-import { PackageVersions } from '@/components/package/PackageVersions';
-import { Box, FileText, History, Shield } from 'lucide-react';
-import { InstallCommand } from '@/components/package/InstallCommand.tsx';
 import { PackageSkeleton } from '@/components/package/PackageSkeleton';
+import { PackageStats } from '@/components/package/PackageStats';
+import { PackageVersions } from '@/components/package/PackageVersions';
 import { SecurityAlertsTab } from '@/components/package/SecurityAlertsTab';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/Tabs';
 import { getGithubStars } from '@/server/github.ts';
-import { Suspense } from 'react';
+import { getBundleSize, getPackageDownloads, getPackageManifest, getPackageReadme, getPackageScore } from '@/server/package';
 import { PackageManifest } from '@/types/package.ts';
 import { SearchResultItem } from '@/types/search.ts';
+import { defaultMeta, siteConfig } from '@/utils/seo';
 import { decodePackageName } from '@/utils/url.ts';
+import { Await, createFileRoute, defer } from '@tanstack/react-router';
+import { Box, FileText, History, Shield } from 'lucide-react';
+import { Suspense } from 'react';
 
 export const Route = createFileRoute('/package/$name')({
     loader: async (opts) => {
         const name = decodePackageName(opts.params.name);
         const statePkg = opts.location.state.package;
 
-        const readmePromise = getPackageReadme({data: name});
-        const downloadsPromise = getPackageDownloads({data: name});
-        const bundleSizePromise = getBundleSize({data: name});
-        const scorePromise = getPackageScore({data: name});
+        const readmePromise = getPackageReadme({ data: name });
+        const downloadsPromise = getPackageDownloads({ data: name });
+        const bundleSizePromise = getBundleSize({ data: name });
+        const scorePromise = getPackageScore({ data: name });
 
         let fastPkg: Partial<PackageManifest> | undefined;
         let pkgResult: Promise<PackageManifest | null> | PackageManifest | null;
@@ -34,13 +34,13 @@ export const Route = createFileRoute('/package/$name')({
 
         if (statePkg) {
             fastPkg = mapSearchResultToManifest(statePkg);
-            pkgResult = defer(getPackageManifest({data: name}));
+            pkgResult = defer(getPackageManifest({ data: name }));
             const repoUrl = fastPkg.repository?.url;
-            starsPromise = repoUrl ? getGithubStars({data: repoUrl}) : Promise.resolve(null);
+            starsPromise = repoUrl ? getGithubStars({ data: repoUrl }) : Promise.resolve(null);
         } else {
-            const fetchedPkg = await getPackageManifest({data: name});
+            const fetchedPkg = await getPackageManifest({ data: name });
             pkgResult = fetchedPkg;
-            starsPromise = (fetchedPkg?.repository?.url) ? getGithubStars({data: fetchedPkg.repository.url}) : Promise.resolve(null);
+            starsPromise = (fetchedPkg?.repository?.url) ? getGithubStars({ data: fetchedPkg.repository.url }) : Promise.resolve(null);
         }
 
         return {
@@ -53,7 +53,7 @@ export const Route = createFileRoute('/package/$name')({
             score: defer(scorePromise),
         };
     },
-    head: ({loaderData}) => {
+    head: ({ loaderData }) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const pkgData = (loaderData?.pkg && 'name' in (loaderData.pkg as any))
             ? (loaderData.pkg as PackageManifest)
@@ -121,20 +121,20 @@ function mapSearchResultToManifest(item: SearchResultItem): Partial<PackageManif
                 email: item.publisher.email,
             },
         ],
-        repository: item.links.repository ? {type: 'git', url: item.links.repository} : undefined,
+        repository: item.links.repository ? { type: 'git', url: item.links.repository } : undefined,
         homepage: item.links.homepage,
         license: undefined,
     };
 }
 
 function PackageDetail() {
-    const {pkg, fastPkg, stars} = Route.useLoaderData();
+    const { pkg, fastPkg, stars } = Route.useLoaderData();
 
     const isDeferred = pkg && typeof pkg === 'object' && 'then' in pkg;
 
     if (isDeferred) {
         return (
-            <Suspense fallback={<PackageSkeleton fastPkg={fastPkg}/>}>
+            <Suspense fallback={<PackageSkeleton fastPkg={fastPkg} />}>
                 <Await promise={pkg as Promise<PackageManifest | null>}>
                     {(resolvedPkg) => (
                         <PackageContent
@@ -160,8 +160,8 @@ type PackageContentProps = {
     stars: Promise<number | null>;
 };
 
-function PackageContent({pkg, stars}: PackageContentProps) {
-    const {readme, downloads, bundleSize, score} = Route.useLoaderData();
+function PackageContent({ pkg, stars }: PackageContentProps) {
+    const { readme, downloads, bundleSize, score } = Route.useLoaderData();
 
     if (!pkg) {
         return (
@@ -259,32 +259,32 @@ function PackageContent({pkg, stars}: PackageContentProps) {
                             </TabsList>
 
                             <TabsContent value={'readme'}>
-                                <PackageReadme readme={readme}/>
+                                <PackageReadme readme={readme} />
                             </TabsContent>
 
                             <TabsContent value={'dependencies'}>
                                 <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
-                                    <PackageDependencies pkg={pkg}/>
+                                    <PackageDependencies pkg={pkg} />
                                 </div>
                             </TabsContent>
 
                             <TabsContent value={'versions'}>
                                 <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
-                                    <PackageVersions pkg={pkg}/>
+                                    <PackageVersions pkg={pkg} />
                                 </div>
                             </TabsContent>
 
                             <TabsContent value={'security'}>
                                 <div className={'overflow-hidden rounded-xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'}>
-                                    <SecurityAlertsTab pkg={pkg}/>
+                                    <SecurityAlertsTab pkg={pkg} />
                                 </div>
                             </TabsContent>
                         </Tabs>
                     </div>
 
                     <div className={'space-y-8 lg:col-span-4'}>
-                        <InstallCommand packageName={pkg.name}/>
-                        <PackageSidebar pkg={pkg}/>
+                        <InstallCommand packageName={pkg.name} />
+                        <PackageSidebar pkg={pkg} />
                     </div>
                 </div>
             </div>

@@ -35,8 +35,7 @@ const PackageReadmeContent: React.FC<PackageReadmeContentProps> = (props: Packag
                     rehypeHighlight,
                 ]}
                 components={{
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    img: ({ node, src, alt, title, ...rest }) => (
+                    img: ({ src, alt, title }) => (
                         <ReadmeImage
                             src={src}
                             alt={alt}

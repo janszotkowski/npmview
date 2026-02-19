@@ -9,16 +9,28 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WatchlistRouteImport } from './routes/watchlist'
 import { Route as TopRouteImport } from './routes/top'
+import { Route as CompareRouteImport } from './routes/compare'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PackageNameRouteImport } from './routes/package/$name'
 import { Route as ApiSentryRouteImport } from './routes/api/sentry'
 import { Route as ApiImageProxyRouteImport } from './routes/api/image-proxy'
 
+const WatchlistRoute = WatchlistRouteImport.update({
+  id: '/watchlist',
+  path: '/watchlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TopRoute = TopRouteImport.update({
   id: '/top',
   path: '/top',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareRoute = CompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -50,7 +62,9 @@ const ApiImageProxyRoute = ApiImageProxyRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/compare': typeof CompareRoute
   '/top': typeof TopRoute
+  '/watchlist': typeof WatchlistRoute
   '/api/image-proxy': typeof ApiImageProxyRoute
   '/api/sentry': typeof ApiSentryRoute
   '/package/$name': typeof PackageNameRoute
@@ -58,7 +72,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/compare': typeof CompareRoute
   '/top': typeof TopRoute
+  '/watchlist': typeof WatchlistRoute
   '/api/image-proxy': typeof ApiImageProxyRoute
   '/api/sentry': typeof ApiSentryRoute
   '/package/$name': typeof PackageNameRoute
@@ -67,7 +83,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/compare': typeof CompareRoute
   '/top': typeof TopRoute
+  '/watchlist': typeof WatchlistRoute
   '/api/image-proxy': typeof ApiImageProxyRoute
   '/api/sentry': typeof ApiSentryRoute
   '/package/$name': typeof PackageNameRoute
@@ -77,7 +95,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/compare'
     | '/top'
+    | '/watchlist'
     | '/api/image-proxy'
     | '/api/sentry'
     | '/package/$name'
@@ -85,7 +105,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/compare'
     | '/top'
+    | '/watchlist'
     | '/api/image-proxy'
     | '/api/sentry'
     | '/package/$name'
@@ -93,7 +115,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/compare'
     | '/top'
+    | '/watchlist'
     | '/api/image-proxy'
     | '/api/sentry'
     | '/package/$name'
@@ -102,7 +126,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  CompareRoute: typeof CompareRoute
   TopRoute: typeof TopRoute
+  WatchlistRoute: typeof WatchlistRoute
   ApiImageProxyRoute: typeof ApiImageProxyRoute
   ApiSentryRoute: typeof ApiSentryRoute
   PackageNameRoute: typeof PackageNameRoute
@@ -110,11 +136,25 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/watchlist': {
+      id: '/watchlist'
+      path: '/watchlist'
+      fullPath: '/watchlist'
+      preLoaderRoute: typeof WatchlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/top': {
       id: '/top'
       path: '/top'
       fullPath: '/top'
       preLoaderRoute: typeof TopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare': {
+      id: '/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof CompareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -158,7 +198,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  CompareRoute: CompareRoute,
   TopRoute: TopRoute,
+  WatchlistRoute: WatchlistRoute,
   ApiImageProxyRoute: ApiImageProxyRoute,
   ApiSentryRoute: ApiSentryRoute,
   PackageNameRoute: PackageNameRoute,

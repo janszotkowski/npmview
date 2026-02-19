@@ -264,7 +264,7 @@ export const getPackageScore = createServerFn({ method: 'GET' })
 export const getTopPackages = createServerFn({ method: 'GET' })
     .inputValidator((period?: 'day' | 'week' | 'month' | 'year', limit?: number) => [period, limit])
     .handler(async (ctx) => {
-        const [period, limit] = ctx.data || ['week', 10];
+        const [period] = ctx.data || ['week', 10];
         const cacheKey = `top-packages:${period}`;
 
         return getDeduplicatedRequest(cacheKey, async () => {
@@ -274,7 +274,7 @@ export const getTopPackages = createServerFn({ method: 'GET' })
             }
 
             try {
-                const response = await fetch(`https://data.jsdelivr.com/v1/stats/packages?period=${period}&limit=${limit}&type=npm`);
+                const response = await fetch(`https://data.jsdelivr.com/v1/stats/packages?period=${period}&limit=10&type=npm`);
 
                 if (!response.ok) {
                     throw new Error(`Failed to fetch top packages: ${response.statusText}`);

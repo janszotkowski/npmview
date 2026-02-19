@@ -10,10 +10,11 @@ import { SearchResultItem } from '@/types/search.ts';
 type SearchProps = {
     readonly variant?: 'default' | 'header';
     readonly className?: string;
+    readonly onSelectPackage?: (name: string) => void;
 };
 
 export const Search: React.FC<SearchProps> = (props): React.ReactElement => {
-    const {variant = 'default', className} = props;
+    const { variant = 'default', className, onSelectPackage } = props;
     const navigate = useNavigate();
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -24,9 +25,9 @@ export const Search: React.FC<SearchProps> = (props): React.ReactElement => {
 
     const debouncedQuery = useDebounce(query, 300);
 
-    const {data, isLoading} = useQuery({
+    const { data, isLoading } = useQuery({
         queryKey: ['search', debouncedQuery],
-        queryFn: () => searchPackages({data: debouncedQuery}),
+        queryFn: () => searchPackages({ data: debouncedQuery }),
         enabled: debouncedQuery.length > 1,
         staleTime: 1000 * 60,
     });
@@ -100,9 +101,16 @@ export const Search: React.FC<SearchProps> = (props): React.ReactElement => {
             const targetName = (activeIndex >= 0 && activeIndex < results.length) ? results[activeIndex].name : query.trim();
 
             if (targetName) {
-                void navigate({to: '/package/$name', params: {name: targetName}});
-                setIsOpen(false);
-                inputRef.current?.blur();
+                if (onSelectPackage) {
+                    onSelectPackage(targetName);
+                    setQuery('');
+                    setIsOpen(false);
+                    inputRef.current?.blur();
+                } else {
+                    void navigate({ to: '/package/$name', params: { name: targetName } });
+                    setIsOpen(false);
+                    inputRef.current?.blur();
+                }
             }
         } else if (e.key === 'Escape') {
             e.preventDefault();
@@ -144,12 +152,18 @@ export const Search: React.FC<SearchProps> = (props): React.ReactElement => {
                 className={`absolute top-full left-0 right-0 z-50 mt-2 transform transition-all duration-200 ease-out origin-top ${isOpen
                     ? 'opacity-100 scale-100 translate-y-0 visible'
                     : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none'
-                }`}
+                    }`}
             >
                 <SearchResults
                     results={results}
                     activeIndex={activeIndex}
                     onSelect={handleSelect}
+                    onResultClick={onSelectPackage ? (name) => {
+                        onSelectPackage(name);
+                        setQuery('');
+                        setIsOpen(false);
+                        inputRef.current?.blur();
+                    } : undefined}
                     className={variant === 'header' ? 'mt-0 shadow-lg border border-neutral-200 dark:border-neutral-800' : 'mt-4'}
                     query={debouncedQuery}
                     isLoading={isLoading}
