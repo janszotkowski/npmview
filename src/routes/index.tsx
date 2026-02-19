@@ -46,6 +46,10 @@ function Home() {
             >
                 <Hero />
 
+                <button onClick={() => { throw new Error('test error to sentry') }}>
+                    error
+                </button>
+
                 <div className={'w-full max-w-2xl flex flex-col items-center relative'}>
                     <Search variant={'default'} />
                 </div>
