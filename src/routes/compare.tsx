@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getPackageManifest, getPackageDownloads, getBundleSize, getPackageScore } from '@/server/package';
 import { getGithubStars } from '@/server/github';
@@ -40,18 +40,11 @@ type PackageData = {
 function ComparePage() {
     const search = useSearch({ from: '/compare' });
     const navigate = useNavigate();
-    const [packageNames, setPackageNames] = useState<string[]>(() => {
+    const packageNames = useMemo(() => {
         if (search.packages) {
             return Array.isArray(search.packages) ? search.packages : [search.packages];
         }
         return [];
-    });
-
-    useEffect(() => {
-        if (search.packages) {
-            const packages = Array.isArray(search.packages) ? search.packages : [search.packages];
-            setPackageNames(packages);
-        }
     }, [search.packages]);
 
     const packagesData = useQuery({
@@ -93,7 +86,6 @@ function ComparePage() {
         const trimmed = name.trim();
         if (trimmed && !packageNames.includes(trimmed)) {
             const newPackages = [...packageNames, trimmed];
-            setPackageNames(newPackages);
             void navigate({
                 to: '/compare',
                 search: { packages: newPackages },
@@ -104,7 +96,6 @@ function ComparePage() {
 
     const handleRemovePackage = (name: string) => {
         const newPackages = packageNames.filter(p => p !== name);
-        setPackageNames(newPackages);
         void navigate({
             to: '/compare',
             search: { packages: newPackages.length > 0 ? newPackages : [] },
@@ -113,7 +104,6 @@ function ComparePage() {
     };
 
     const handleClearAll = () => {
-        setPackageNames([]);
         void navigate({
             to: '/compare',
             search: { packages: [] },

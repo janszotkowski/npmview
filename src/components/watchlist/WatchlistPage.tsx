@@ -1,20 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { getWatchlist, addToWatchlist, removeFromWatchlist, type WatchlistItem } from '@/utils/watchlist';
 import { WatchlistHero } from './WatchlistHero';
 import { WatchlistSearchSection } from './WatchlistSearchSection';
 import { WatchlistEmptyState } from './WatchlistEmptyState';
 import { WatchlistPackageCard } from './WatchlistPackageCard';
 
-export const WatchlistPage: React.FC = (): React.ReactElement => {
-    const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
-    const [showNotifications, setShowNotifications] = useState(false);
+function getInitialWatchlist(): WatchlistItem[] {
+    return getWatchlist();
+}
 
-    useEffect(() => {
-        setWatchlist(getWatchlist());
-        if ('Notification' in window) {
-            setShowNotifications(Notification.permission === 'granted');
-        }
-    }, []);
+function getInitialShowNotifications(): boolean {
+    return typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted';
+}
+
+export const WatchlistPage: React.FC = (): React.ReactElement => {
+    const [watchlist, setWatchlist] = useState<WatchlistItem[]>(getInitialWatchlist);
+    const [showNotifications, setShowNotifications] = useState(getInitialShowNotifications);
 
     const handleAdd = (name: string): void => {
         const trimmed = name.trim();
