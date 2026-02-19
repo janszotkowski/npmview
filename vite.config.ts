@@ -8,6 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 import { playwright } from '@vitest/browser-playwright';
+import { sentryTanstackStart } from '@sentry/tanstackstart-react';
 
 const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
@@ -44,6 +45,11 @@ export default defineConfig({
             //     enabled: true,
             //     host: '',
             // },
+        }),
+        sentryTanstackStart({
+            org: process.env.SENTRY_ORG,
+            project: process.env.SENTRY_PROJECT,
+            authToken: process.env.SENTRY_AUTH_TOKEN,
         }),
         viteReact(),
         tailwindcss(),

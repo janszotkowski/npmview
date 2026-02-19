@@ -13,6 +13,7 @@ import { Route as TopRouteImport } from './routes/top'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PackageNameRouteImport } from './routes/package/$name'
+import { Route as ApiSentryRouteImport } from './routes/api/sentry'
 
 const TopRoute = TopRouteImport.update({
   id: '/top',
@@ -34,17 +35,24 @@ const PackageNameRoute = PackageNameRouteImport.update({
   path: '/package/$name',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSentryRoute = ApiSentryRouteImport.update({
+  id: '/api/sentry',
+  path: '/api/sentry',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/top': typeof TopRoute
+  '/api/sentry': typeof ApiSentryRoute
   '/package/$name': typeof PackageNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/top': typeof TopRoute
+  '/api/sentry': typeof ApiSentryRoute
   '/package/$name': typeof PackageNameRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/top': typeof TopRoute
+  '/api/sentry': typeof ApiSentryRoute
   '/package/$name': typeof PackageNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/top' | '/package/$name'
+  fullPaths: '/' | '/about' | '/top' | '/api/sentry' | '/package/$name'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/top' | '/package/$name'
-  id: '__root__' | '/' | '/about' | '/top' | '/package/$name'
+  to: '/' | '/about' | '/top' | '/api/sentry' | '/package/$name'
+  id: '__root__' | '/' | '/about' | '/top' | '/api/sentry' | '/package/$name'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   TopRoute: typeof TopRoute
+  ApiSentryRoute: typeof ApiSentryRoute
   PackageNameRoute: typeof PackageNameRoute
 }
 
@@ -99,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PackageNameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/sentry': {
+      id: '/api/sentry'
+      path: '/api/sentry'
+      fullPath: '/api/sentry'
+      preLoaderRoute: typeof ApiSentryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -106,6 +123,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   TopRoute: TopRoute,
+  ApiSentryRoute: ApiSentryRoute,
   PackageNameRoute: PackageNameRoute,
 }
 export const routeTree = rootRouteImport

@@ -44,14 +44,14 @@ function Home() {
             <div
                 className={'w-full max-w-4xl px-4 sm:px-6 lg:px-8 flex flex-col items-center pt-[15vh] space-y-8 text-center relative z-10'}
             >
-                <Hero/>
+                <Hero />
 
                 <div className={'w-full max-w-2xl flex flex-col items-center relative'}>
-                    <Search variant={'default'}/>
+                    <Search variant={'default'} />
                 </div>
 
-                <Promotions/>
-                <TrendingPackages/>
+                <Promotions />
+                <TrendingPackages />
             </div>
         </div>
     );
